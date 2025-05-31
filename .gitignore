@@ -1,0 +1,5 @@
+# Rust builds
+/target
+
+# Mac view settings menace
+.DS_Store
