@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 use ratatui::layout::{Alignment, Size};
-use ratatui::style::{Color as RatatuiColor, Stylize};
+use ratatui::style::Stylize;
 use ratatui::widgets::{Block, BorderType, Padding, Wrap};
 use ratatui::{
     buffer::Buffer,
@@ -14,9 +14,9 @@ use ratatui::{
 use tachyonfx::{Effect, Interpolation, Motion, Shader, fx};
 use tui_scrollview::{ScrollView, ScrollViewState, ScrollbarVisibility};
 
-use crate::color_scheme::{
-    MAC_GREEN_COLOR, MAC_RED_COLOR, PLASTIC_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR,
-    PLASTIC_SECONDARY_COLOR,
+use crate::constants::{
+    LETTER_PADDING, MAC_GREEN_COLOR, MAC_RED_COLOR, PLASTIC_DARK_BACKGROUND_COLOR,
+    PLASTIC_LIGHT_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR, PLASTIC_SECONDARY_COLOR,
 };
 use crate::sound::SoundEffect;
 use crate::{
@@ -50,7 +50,7 @@ pub struct CurrentLetter(pub Letter);
 
 pub struct CurrentLetterState {
     effect: Effect,
-    scroll_state: ScrollViewState,
+    pub scroll_state: ScrollViewState,
     revealed: CurrentLetterRevealed,
 }
 
@@ -61,7 +61,7 @@ impl Default for CurrentLetterState {
                 Motion::UpToDown,
                 10,
                 0,
-                RatatuiColor::Rgb(0, 0, 0),
+                PLASTIC_LIGHT_BACKGROUND_COLOR,
                 (1000, Interpolation::Linear),
             ),
             scroll_state: ScrollViewState::default(),
@@ -98,7 +98,8 @@ impl CurrentLetterRevealed {
             ((elapsed_ms - time_cursor) / BODY_REVEAL_TIME) as usize
         } else {
             0
-        }.min(letter.body.len());
+        }
+        .min(letter.body.len());
         time_cursor += body_time + REVEAL_TIME_MARGIN;
 
         // blessings header
@@ -110,7 +111,8 @@ impl CurrentLetterRevealed {
             ((elapsed_ms - time_cursor) / BLESSING_REVEAL_TIME) as usize
         } else {
             0
-        }.min(letter.blessings.len());
+        }
+        .min(letter.blessings.len());
         time_cursor += letter.blessings.len() as u32 * BLESSING_REVEAL_TIME + REVEAL_TIME_MARGIN;
 
         // curses header
@@ -122,7 +124,8 @@ impl CurrentLetterRevealed {
             ((elapsed_ms - time_cursor) / CURSE_REVEAL_TIME) as usize
         } else {
             0
-        }.min(letter.curses.len());
+        }
+        .min(letter.curses.len());
         time_cursor += letter.curses.len() as u32 * CURSE_REVEAL_TIME + REVEAL_TIME_MARGIN;
 
         // signoff
@@ -130,7 +133,8 @@ impl CurrentLetterRevealed {
             ((elapsed_ms - time_cursor) / SIGNOFF_REVEAL_TIME) as usize
         } else {
             0
-        }.min(letter.signoff.len());
+        }
+        .min(letter.signoff.len());
         time_cursor += letter.signoff.len() as u32 * SIGNOFF_REVEAL_TIME + REVEAL_TIME_MARGIN;
 
         // footer
@@ -154,131 +158,143 @@ impl StatefulWidget for &CurrentLetter {
     type State = CurrentLetterState;
 
     fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
-            let mut lines: Vec<Line> = Vec::new();
-            let CurrentLetterRevealed {
-                title_revealed,
-                body_chars_revealed,
-                blessings_header_revealed,
-                blessings_revealed,
-                curses_header_revealed,
-                curses_revealed,
-                signoff_chars_revealed,
-                footer_revealed,
-                ..
-            } = state.revealed;
+        let mut lines: Vec<Line> = Vec::new();
+        let CurrentLetterRevealed {
+            title_revealed,
+            body_chars_revealed,
+            blessings_header_revealed,
+            blessings_revealed,
+            curses_header_revealed,
+            curses_revealed,
+            signoff_chars_revealed,
+            footer_revealed,
+            ..
+        } = state.revealed;
 
-            // title
-            if title_revealed {
-                lines.push(
-                    Line::from(Span::styled(&self.title, Style::default().bold())).centered(),
-                );
+        // title
+        if title_revealed {
+            lines.push(Line::from(Span::styled(&self.title, Style::default().bold())).centered());
+        }
+
+        // body
+        if body_chars_revealed > 0 {
+            lines.push(Line::from(""));
+            let revealed_body = &self.body[..body_chars_revealed.min(self.body.len())];
+            for line in revealed_body.lines() {
+                lines.push(Line::from(line));
             }
-
-            // body
-            if body_chars_revealed > 0 {
+            if body_chars_revealed >= self.body.len() {
                 lines.push(Line::from(""));
-                let revealed_body = &self.body[..body_chars_revealed.min(self.body.len())];
-                for line in revealed_body.lines() {
-                    lines.push(Line::from(line));
-                }
-                if body_chars_revealed >= self.body.len() {
-                    lines.push(Line::from(""));
-                }
             }
+        }
 
-            // blessings header
-            if blessings_header_revealed {
-                lines.push(Line::from(Span::styled(
-                    "THOSE THAT CONTINUED THE CHAIN:",
-                    Style::default().italic(),
-                )));
-            }
+        // blessings header
+        if blessings_header_revealed {
+            lines.push(Line::from(Span::styled(
+                "THOSE THAT CONTINUED THE CHAIN:",
+                Style::default().italic(),
+            )));
+        }
 
-            // blessings
-            for i in 0..blessings_revealed.min(self.blessings.len()) {
-                lines.push(Line::from(vec![
-                    Span::styled("+ ", Style::default().fg(MAC_GREEN_COLOR)),
-                    Span::raw(&self.blessings[i]),
-                ]));
-            }
+        // blessings
+        for i in 0..blessings_revealed.min(self.blessings.len()) {
+            lines.push(Line::from(vec![
+                Span::styled("+ ", Style::default().fg(MAC_GREEN_COLOR)),
+                Span::raw(&self.blessings[i]),
+            ]));
+        }
 
-            // curses header
-            if curses_header_revealed {
-                lines.push(Line::from(""));
-                lines.push(Line::from(Span::styled(
-                    "THOSE BROKE THE CHAIN:",
-                    Style::default().italic(),
-                )));
-            }
+        // curses header
+        if curses_header_revealed {
+            lines.push(Line::from(""));
+            lines.push(Line::from(Span::styled(
+                "THOSE BROKE THE CHAIN:",
+                Style::default().italic(),
+            )));
+        }
 
-            // curses
-            for i in 0..curses_revealed.min(self.curses.len()) {
-                lines.push(Line::from(vec![
-                    Span::styled("- ", Style::default().fg(MAC_RED_COLOR)),
-                    Span::raw(&self.curses[i]),
-                ]));
-            }
+        // curses
+        for i in 0..curses_revealed.min(self.curses.len()) {
+            lines.push(Line::from(vec![
+                Span::styled("- ", Style::default().fg(MAC_RED_COLOR)),
+                Span::raw(&self.curses[i]),
+            ]));
+        }
 
-            // signoff
-            if signoff_chars_revealed > 0 {
-                lines.push(Line::from(""));
-                let revealed_signoff =
-                    &self.signoff[..signoff_chars_revealed.min(self.signoff.len())];
-                lines.push(Line::from(revealed_signoff));
-            }
+        // signoff
+        if signoff_chars_revealed > 0 {
+            lines.push(Line::from(""));
+            let revealed_signoff = &self.signoff[..signoff_chars_revealed.min(self.signoff.len())];
+            lines.push(Line::from(revealed_signoff));
+        }
 
-            // footer
-            if footer_revealed {
-                lines.push(Line::from(""));
-                lines.push(Line::from(Span::styled(
-                    &self.footer,
-                    Style::default().fg(PLASTIC_SECONDARY_COLOR),
-                )));
-            }
+        // footer
+        if footer_revealed {
+            lines.push(Line::from(""));
+            lines.push(Line::from(Span::styled(
+                &self.footer,
+                Style::default().fg(PLASTIC_SECONDARY_COLOR),
+            )));
+        }
 
-            // wrap in paragraph
-            let paragraph = Paragraph::new(Text::from(lines))
-                .wrap(Wrap { trim: true })
-                .fg(PLASTIC_PRIMARY_COLOR);
+        // wrap in paragraph
+        let paragraph = Paragraph::new(Text::from(lines))
+            .wrap(Wrap { trim: true })
+            .fg(PLASTIC_PRIMARY_COLOR);
 
-            // containing block
-            let mut block = Block::bordered()
-                .border_type(BorderType::QuadrantOutside)
-                .border_style(Style::default().fg(PLASTIC_PRIMARY_COLOR))
-                .padding(Padding::new(2, 2, 1, 0))
-                .bg(PLASTIC_BACKGROUND_COLOR);
-            let block_inner_area = block.inner(area);
+        // pad window
+        let area = Block::default()
+            .padding(Padding::proportional(LETTER_PADDING))
+            .inner(area);
 
-            let paragraph_height = paragraph.line_count(block_inner_area.width);
+        // containing block
+        let mut block = Block::bordered()
+            .border_type(BorderType::QuadrantInside)
+            .border_style(
+                Style::default()
+                    .fg(PLASTIC_PRIMARY_COLOR)
+                    .bg(PLASTIC_LIGHT_BACKGROUND_COLOR),
+            )
+            .bg(PLASTIC_DARK_BACKGROUND_COLOR);
+        let unpadded_block_inner_area = block.inner(area);
+        let block_inner_area = Block::default()
+            .padding(Padding::proportional(1))
+            .inner(unpadded_block_inner_area);
 
-            let scroll_buffer_size = Size::new(
-                block_inner_area.width,
-                (paragraph_height as u16).max(block_inner_area.height),
-            );
-            let scroll_area = Rect::new(0, 0, scroll_buffer_size.width, scroll_buffer_size.height);
+        let paragraph_height = paragraph.line_count(block_inner_area.width);
 
-            let mut scroll_view = ScrollView::new(scroll_buffer_size)
-                .scrollbars_visibility(ScrollbarVisibility::Never);
+        let scroll_buffer_size = Size::new(
+            block_inner_area.width,
+            (paragraph_height as u16).max(block_inner_area.height - 1),
+        );
+        let scroll_area = Rect::new(0, 0, scroll_buffer_size.width, scroll_buffer_size.height);
 
-            let hidden_rows = scroll_area.height.saturating_sub(block_inner_area.height);
-            if state.scroll_state.offset().y < hidden_rows {
-                block = block
-                    .title_bottom(" ↓ SCROLL ↓ ")
-                    .title_alignment(Alignment::Center);
-            }
-            if hidden_rows > 0 && state.scroll_state.offset().y > 0 {
-                block = block
-                    .title_top(" ↑ SCROLL ↑ ")
-                    .title_alignment(Alignment::Center);
-            }
+        let mut scroll_view =
+            ScrollView::new(scroll_buffer_size).scrollbars_visibility(ScrollbarVisibility::Never);
 
-            // draw
-            scroll_view.render_widget(paragraph, scroll_area);
-            scroll_view.render(block_inner_area, buf, &mut state.scroll_state);
-            block.render(area, buf);
+        let hidden_rows = scroll_area
+            .height
+            .saturating_sub(block_inner_area.height - 1);
+        if state.scroll_state.offset().y < hidden_rows {
+            block = block
+                .title_bottom(" ↓ SCROLL ↓ ")
+                .title_alignment(Alignment::Center);
+        }
+        if hidden_rows > 0 && state.scroll_state.offset().y > 0 {
+            block = block
+                .title_top(" ↑ SCROLL ↑ ")
+                .title_alignment(Alignment::Center);
+        }
 
-            // slide in effect
-            state.effect.execute(Duration::ZERO.into(), area, buf);
+        // draw
+        scroll_view.render_widget(paragraph, scroll_area);
+        scroll_view.render(block_inner_area, buf, &mut state.scroll_state);
+        block.render(area, buf);
+
+        // slide in effect
+        state
+            .effect
+            .execute(Duration::ZERO.into(), unpadded_block_inner_area, buf);
     }
 }
 
@@ -306,7 +322,11 @@ pub fn letter_reveal_system(
             .revealed
             .next_state(time.delta(), current_letter);
 
-        trigger_reveal_sound_effects(commands.reborrow(), &current_letter_state.revealed, &new_revealed_state);
+        trigger_reveal_sound_effects(
+            commands.reborrow(),
+            &current_letter_state.revealed,
+            &new_revealed_state,
+        );
 
         current_letter_state.revealed = new_revealed_state;
 
@@ -317,7 +337,11 @@ pub fn letter_reveal_system(
     }
 }
 
-fn trigger_reveal_sound_effects(mut commands: Commands, previous: &CurrentLetterRevealed, next: &CurrentLetterRevealed) {
+fn trigger_reveal_sound_effects(
+    mut commands: Commands,
+    previous: &CurrentLetterRevealed,
+    next: &CurrentLetterRevealed,
+) {
     if previous.title_revealed != next.title_revealed {
         commands.trigger(SoundEffect::Slam);
     }

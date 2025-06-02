@@ -2,20 +2,22 @@ use bevy::{
     diagnostic::{DiagnosticsStore, EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin},
     prelude::*,
 };
+use ratatui::widgets::{Padding, Widget};
 use ratatui::{
     Frame,
     layout::{Constraint, Direction, Layout},
     style::{Style, Stylize},
     text::Line,
-    widgets::Block,
-};
-use ratatui::{
-    style::Color as RatatuiColor,
-    widgets::{Borders, Padding},
+    widgets::{Block, BorderType},
 };
 use tui_logger::TuiLoggerWidget;
 
-use crate::draw::Flags;
+use crate::{
+    constants::{
+        PLASTIC_DARK_BACKGROUND_COLOR, PLASTIC_LIGHT_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR,
+    },
+    draw::Flags,
+};
 
 pub fn debug_frame(
     frame: &mut Frame,
@@ -23,17 +25,24 @@ pub fn debug_frame(
     diagnostics: &DiagnosticsStore,
     show_log_panel: bool,
 ) -> ratatui::layout::Rect {
+    Block::default()
+        .bg(PLASTIC_DARK_BACKGROUND_COLOR)
+        .render(frame.area(), frame.buffer_mut());
+
     let main_block = Block::bordered()
-        .bg(RatatuiColor::Rgb(0, 0, 0))
-        .border_style(Style::default().bg(ratatui::style::Color::Black));
-    let undertab_block = Block::default()
-        .borders(Borders::LEFT | Borders::BOTTOM | Borders::RIGHT)
+        .border_type(BorderType::QuadrantInside)
+        .border_style(Style::default().bg(PLASTIC_DARK_BACKGROUND_COLOR))
+        .bg(PLASTIC_LIGHT_BACKGROUND_COLOR)
+        .fg(PLASTIC_PRIMARY_COLOR);
+    let undertab_block = Block::bordered()
+        .border_type(BorderType::Thick)
         .padding(Padding::horizontal(2))
-        .bg(RatatuiColor::Black);
+        .bg(PLASTIC_DARK_BACKGROUND_COLOR)
+        .fg(PLASTIC_PRIMARY_COLOR);
 
     let layout = Layout::new(
         Direction::Vertical,
-        [Constraint::Fill(1), Constraint::Length(2)],
+        [Constraint::Fill(1), Constraint::Length(3)],
     )
     .split(frame.area());
 
@@ -56,6 +65,7 @@ pub fn debug_frame(
             Constraint::Length(controls_string.len() as u16 + 8),
         ],
     )
+    .spacing(1)
     .split(layout[1]);
     frame.render_widget(name_line, undertab_block.inner(bottom_area[0]));
     frame.render_widget(undertab_block.clone(), bottom_area[0]);

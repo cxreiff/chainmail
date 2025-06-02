@@ -4,7 +4,7 @@ use bevy::{
 };
 use bevy_ratatui::RatatuiPlugins;
 
-mod color_scheme;
+mod constants;
 mod draw;
 mod input;
 mod letters;
