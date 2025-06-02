@@ -24,8 +24,14 @@ tracing = { version = "0.1", features = [
 ] }
 bevy_ratatui = { git = "https://github.com/cxreiff/bevy_ratatui", branch = "font_included", default-features = false }
 bevy_ratatui_camera = "0.15.0"
-ratatui = { version = "0.29.0", default-features = false }
+ratatui = { version = "0.29.0", default-features = false, features = ["unstable-rendered-line-info"] }
 rand_chacha = "0.3.1"
+bevy_asset_loader = { version = "0.23.0", features = ["standard_dynamic_assets"] }
+serde = "1.0.219"
+bevy_common_assets = { version = "0.13.0", features = ["ron"] }
+tui-logger = { version = "0.17.3", features = ["tracing-support"] }
+tachyonfx = { version = "0.15.0", default-features = false, features = ["sendable"] }
+tui-scrollview = "0.5.1"
 
 # Your web builds will start failing if you add a dependency that pulls in `getrandom` v0.3+.
 # To fix this, you should tell `getrandom` to use the `wasm_js` backend on Wasm.
@@ -58,7 +64,7 @@ dev_native = [
     "bevy/embedded_watcher",
 ]
 
-crossterm = ["bevy_ratatui/crossterm"]
+crossterm = ["bevy_ratatui/crossterm", "tachyonfx/crossterm"]
 windowed = ["bevy_ratatui/windowed"]
 
 [package.metadata.bevy_cli.native]

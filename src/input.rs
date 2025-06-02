@@ -17,6 +17,9 @@ pub fn handle_input_system(mut crossterm_input: EventReader<KeyEvent>, mut flags
             if let KeyCode::Char('d') = event.code {
                 flags.debug = !flags.debug;
             }
+            if let KeyCode::Char('m') = event.code {
+                flags.sound = !flags.sound;
+            }
         }
     }
 }
@@ -26,6 +29,9 @@ pub fn handle_input_system(bevy_input: Res<ButtonInput<KeyCode>>, mut flags: Res
     for &press in bevy_input.get_just_pressed() {
         if press == KeyCode::KeyD {
             flags.debug = !flags.debug;
+        };
+        if press == KeyCode::KeyM {
+            flags.sound = !flags.sound;
         };
     }
 }

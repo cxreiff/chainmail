@@ -1,0 +1,33 @@
+({
+    "letters": Files(
+        paths: [
+            "letters/letter1.letter.ron",
+        ],
+    ),
+    "sounds.slam": Files(
+        paths: [
+            "sounds/slam1.ogg",
+        ],
+    ),
+    "sounds.tap": Files(
+        paths: [
+            "sounds/tap1.ogg",
+        ],
+    ),
+    "sounds.bless_header": File(
+        path: "sounds/bless_header.ogg",
+    ),
+    "sounds.bless": Files(
+        paths: [
+            "sounds/bless1.ogg",
+        ],
+    ),
+    "sounds.curse_header": File(
+        path: "sounds/curse_header.ogg",
+    ),
+    "sounds.curse": Files(
+        paths: [
+            "sounds/curse1.ogg",
+        ],
+    ),
+})

@@ -22,9 +22,10 @@ while you are running away from a "wraith" entity.
 - If you take too long, you get chased by an unstoppable malevolent entity,
   sort of like the SkiFree yeti.
 
-### Visuals
+### Aesthetics
 - Each letter will appear character-by-character or word-by-word like a typical
-  character dialogue window, within a border that looks like a letter.
+  character dialogue window, within a border that looks like a letter. Random
+  sound effect per revealed character, like animal crossing or chulip.
 - Some form of vector graphics? Perhaps using the Canvas and Line widgets from
   Ratatui.
 - When taking damage from an obstacle, use Ratatui widgets and
@@ -33,6 +34,10 @@ while you are running away from a "wraith" entity.
 - Stretch goal: when taking damage, can we create a "glitch" effect by actually
   messing with how the characters are drawn to the buffer for a few frames?
 
+### Other
+- Use other jam participants' usernames as senders, recipients, and/or quoted
+  testimonials, i.e. "@example met their true love 9 days after forwarding!" or
+  similar.
 
 ## Alternative Idea (tighter scope)
 

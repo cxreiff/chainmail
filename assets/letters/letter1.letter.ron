@@ -1,0 +1,17 @@
+(
+    title: "CHAIN OF GOOD FORTUNE",
+    body: "This letter has been around the world 7 times and brings good luck to all who continue the chain. Copy this letter exactly and send it to 5 friends within 48 hours. Do not break the chain!",
+    blessings: [
+        "Sarah M. received unexpected money 4 days later",
+        "Jim T. got the job he wanted within a week",
+        "Maria L. met her true love 9 days after sending",
+        "David K. won a contest he had forgotten entering",
+    ],
+    curses: [
+        "Lost their keys the very next day",
+        "Had 3 weeks of bad weather on vacation",
+        "Missed an important phone call",
+    ],
+    signoff: "This is not a joke! The chain must not be broken. Send to 5 people you care about. Good luck will come to you, but only if you keep the chain alive!",
+    footer: "This letter originated in 1953 and has circled the globe bringing fortune to thousands.",
+)

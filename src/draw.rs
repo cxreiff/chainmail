@@ -1,16 +1,18 @@
-use bevy::{
-    diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin},
-    prelude::*,
-};
+use bevy::{diagnostic::DiagnosticsStore, prelude::*};
 use bevy_ratatui::RatatuiContext;
 use ratatui::{
-    Frame,
-    layout::{Alignment, Rect},
-    style::{Style, Stylize},
-    widgets::Block,
+    layout::{Constraint, Layout},
+    style::Style,
+    widgets::{Block, BorderType, Padding, StatefulWidget, Widget},
 };
 
-use crate::scene::Star;
+use crate::{
+    color_scheme::PLASTIC_PRIMARY_COLOR,
+    widgets::{
+        current_letter::{CurrentLetter, CurrentLetterState},
+        debug_frame::debug_frame,
+    },
+};
 
 pub fn plugin(app: &mut App) {
     app.init_resource::<Flags>()
@@ -20,52 +22,46 @@ pub fn plugin(app: &mut App) {
 #[derive(Resource, Default)]
 pub struct Flags {
     pub debug: bool,
+    pub sound: bool,
 }
 
 fn draw_system(
     mut ratatui: ResMut<RatatuiContext>,
-    stars: Query<&Star>,
     flags: Res<Flags>,
     diagnostics: Res<DiagnosticsStore>,
+    current_letter: Option<Res<CurrentLetter>>,
+    mut current_letter_state: NonSendMut<CurrentLetterState>,
 ) -> Result {
     ratatui.draw(|frame| {
-        let area = debug_frame(frame, &flags, &diagnostics);
+        let show_log_panel = !cfg!(feature = "windowed");
+        let area = debug_frame(frame, &flags, &diagnostics, show_log_panel);
 
         let buffer = frame.buffer_mut();
-        for star in &stars {
-            if !area.contains((star.col, star.row).into()) {
-                continue;
-            }
 
-            let Some(cell) = buffer.cell_mut((star.col, star.row)) else {
-                continue;
-            };
+        let [left_area, right_area] =
+            *Layout::horizontal(Constraint::from_fills([1, 1])).split(area)
+        else {
+            unreachable!()
+        };
 
-            cell.fg = star.color;
-            cell.set_char(star.character);
-        }
+        let letter_area = Block::new()
+            .padding(Padding::new(4, 2, 2, 2))
+            .inner(left_area);
+
+        if let Some(current_letter) = current_letter {
+            current_letter.render(letter_area, buffer, &mut current_letter_state);
+        };
+
+        let game_area = Block::new()
+            .padding(Padding::new(2, 4, 2, 2))
+            .inner(right_area);
+
+        let game_block = Block::bordered()
+            .border_type(BorderType::QuadrantOutside)
+            .border_style(Style::default().fg(PLASTIC_PRIMARY_COLOR));
+
+        game_block.render(game_area, buffer);
     })?;
 
     Ok(())
-}
-
-pub fn debug_frame(frame: &mut Frame, flags: &Flags, diagnostics: &DiagnosticsStore) -> Rect {
-    let mut block = Block::bordered()
-        .bg(ratatui::style::Color::Black)
-        .border_style(Style::default().bg(ratatui::style::Color::Black))
-        .title_alignment(Alignment::Center);
-
-    if flags.debug {
-        if let Some(value) = diagnostics
-            .get(&FrameTimeDiagnosticsPlugin::FPS)
-            .and_then(|fps| fps.smoothed())
-        {
-            block = block.title_top(format!("[fps: {value:.0}]"));
-        }
-    }
-
-    let inner = block.inner(frame.area());
-    frame.render_widget(block, frame.area());
-
-    inner
 }
