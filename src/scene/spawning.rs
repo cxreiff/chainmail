@@ -9,18 +9,28 @@ use rand_chacha::{
 use crate::states::GameStates;
 
 pub fn plugin(app: &mut App) {
-    app.init_resource::<StarRng>().add_systems(OnEnter(GameStates::Playing), scene_setup_system).add_systems(
-        Update,
-        (
-            star_spawn_system.run_if(on_timer(Duration::from_millis(1000))),
-            star_move_system,
-            star_despawn_system,
-        ),
-    );
+    app.init_resource::<StarRng>()
+        .add_systems(OnEnter(GameStates::Playing), scene_setup_system)
+        .add_systems(
+            Update,
+            (
+                star_spawn_system.run_if(on_timer(Duration::from_millis(1000))),
+                star_move_system,
+                star_despawn_system,
+            ),
+        );
 }
 
 #[derive(Component, Debug, Default)]
-pub struct Star;
+pub struct Star {
+    pub word: String,
+}
+
+impl Star {
+    fn new(word: &str) -> Self {
+        Self { word: word.into() }
+    }
+}
 
 #[derive(Resource, Deref, DerefMut)]
 pub struct StarRng(ChaCha8Rng);
@@ -32,9 +42,7 @@ impl Default for StarRng {
 }
 
 fn scene_setup_system(mut commands: Commands) {
-    commands.spawn((
-        PointLight::default(),
-    ));
+    commands.spawn((PointLight::default(),));
 }
 
 fn star_spawn_system(
@@ -48,18 +56,14 @@ fn star_spawn_system(
     let spawn_rect = get_visible_rectangle_at_depth(camera, camera_transform, 10.0).unwrap();
 
     commands.spawn((
-        Star,
+        Star::new("egg"),
         Mesh3d(meshes.add(Cuboid::new(0.5, 0.5, 0.5))),
         MeshMaterial3d(materials.add(Color::hsl(
             ((rng.next_u32() % 180 + 165) % 360) as f32,
             0.3,
             0.4,
         ))),
-        Transform::from_translation(
-            spawn_rect
-                .sample_interior(&mut rng.0)
-                .extend(-10.0),
-        ),
+        Transform::from_translation(spawn_rect.sample_interior(&mut rng.0).extend(-10.0)),
     ));
 }
 
@@ -71,7 +75,10 @@ fn star_move_system(time: Res<Time>, mut stars: Query<&mut Transform, With<Star>
     }
 }
 
-fn star_despawn_system(mut commands: Commands, mut stars: Query<(Entity, &mut Transform), With<Star>>) {
+fn star_despawn_system(
+    mut commands: Commands,
+    mut stars: Query<(Entity, &mut Transform), With<Star>>,
+) {
     for (entity, transform) in &mut stars {
         if transform.translation.length() < 1.0 {
             commands.entity(entity).despawn();

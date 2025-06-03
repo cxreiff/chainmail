@@ -2,11 +2,14 @@ use std::ops::DerefMut;
 
 use bevy::{diagnostic::DiagnosticsStore, prelude::*};
 use bevy_ratatui::RatatuiContext;
-use bevy_ratatui_camera::{RatatuiCameraDepthBuffer, RatatuiCameraWidget};
+use bevy_ratatui_camera::RatatuiCameraWidget;
 use ratatui::{
-    layout::{Constraint, Layout},
-    widgets::{Block, StatefulWidget},
+    layout::{Constraint, Layout, Rect},
+    text::Line,
+    widgets::{Block, StatefulWidget, Widget},
 };
+
+use crate::scene::spawning::Star;
 
 use super::{
     layout::layout_frame,
@@ -30,8 +33,11 @@ fn draw_system(
     diagnostics: Res<DiagnosticsStore>,
     current_letter: Option<Res<CurrentLetter>>,
     mut current_letter_state: NonSendMut<CurrentLetterState>,
-    camera_widget: Single<&mut RatatuiCameraWidget>,
+    camera: Single<(&Camera, &GlobalTransform, &mut RatatuiCameraWidget)>,
+    stars: Query<(&Star, &Transform)>,
 ) -> Result {
+    let (camera, camera_transform, camera_widget) = camera.into_inner();
+
     ratatui.draw(|frame| {
         let show_log_panel = !cfg!(feature = "windowed");
         let area = layout_frame(frame, &flags, &diagnostics, show_log_panel);
@@ -40,8 +46,7 @@ fn draw_system(
 
         let left_width = (area.width * 2 / 5).min(120);
         let [left_area, right_area] =
-            *Layout::horizontal([Constraint::Max(left_width), Constraint::Fill(1)])
-                .split(area)
+            *Layout::horizontal([Constraint::Max(left_width), Constraint::Fill(1)]).split(area)
         else {
             unreachable!()
         };
@@ -52,9 +57,31 @@ fn draw_system(
             current_letter.render(letter_area, buffer, &mut current_letter_state);
         };
 
-        let depth = &mut RatatuiCameraDepthBuffer::new(right_area);
+        let mut star_widgets = vec![];
+        for (star, star_transform) in &stars {
+            let Some(ndc_coords) =
+                camera.world_to_ndc(camera_transform, star_transform.translation)
+            else {
+                continue;
+            };
 
-        frame.render_stateful_widget(camera_widget.into_inner().deref_mut(), right_area, depth);
+            let position = camera_widget.ndc_to_cell(right_area, ndc_coords);
+            star_widgets.push((
+                Line::from(star.word.clone()),
+                Rect::new(
+                    position.x as u16,
+                    position.y as u16,
+                    star.word.len() as u16,
+                    1,
+                ),
+            ));
+        }
+
+        Widget::render(camera_widget.into_inner().deref_mut(), right_area, buffer);
+
+        for (star_widget, star_area) in &star_widgets {
+            star_widget.render(*star_area, buffer);
+        }
     })?;
 
     Ok(())

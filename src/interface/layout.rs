@@ -13,7 +13,8 @@ use ratatui::{
 use tui_logger::TuiLoggerWidget;
 
 use crate::constants::{
-    PLASTIC_BLACK_BACKGROUND_COLOR, PLASTIC_DARK_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR
+    MAC_RED_MUTED_COLOR, PLASTIC_DARK_BACKGROUND_COLOR, PLASTIC_LIGHT_BACKGROUND_COLOR,
+    PLASTIC_PRIMARY_COLOR,
 };
 
 use super::draw::Flags;
@@ -29,9 +30,9 @@ pub fn layout_frame(
         .render(frame.area(), frame.buffer_mut());
 
     let main_block = Block::bordered()
-        .border_type(BorderType::Thick)
+        .border_type(BorderType::QuadrantInside)
         .border_style(Style::default().bg(PLASTIC_DARK_BACKGROUND_COLOR))
-        .bg(PLASTIC_BLACK_BACKGROUND_COLOR)
+        .bg(PLASTIC_LIGHT_BACKGROUND_COLOR)
         .fg(PLASTIC_PRIMARY_COLOR);
     let undertab_block = Block::bordered()
         .border_type(BorderType::Thick)
@@ -39,11 +40,13 @@ pub fn layout_frame(
         .bg(PLASTIC_DARK_BACKGROUND_COLOR)
         .fg(PLASTIC_PRIMARY_COLOR);
 
-    let layout = Layout::new(
+    let [main_area, bottom_area] = *Layout::new(
         Direction::Vertical,
         [Constraint::Fill(1), Constraint::Length(3)],
     )
-    .split(frame.area());
+    .split(frame.area()) else {
+        unreachable!()
+    };
 
     let name_string = "CHAINMAIL";
     let name_line = Line::from(name_string).centered();
@@ -64,7 +67,6 @@ pub fn layout_frame(
         {
             status_strings.push(format!("fps: {value:3.0}"));
         }
-
     }
     let status_string = status_strings.join("  |  ");
     let status_line = Line::from(status_string).centered();
@@ -81,13 +83,20 @@ pub fn layout_frame(
         ],
     )
     .spacing(1)
-    .split(layout[1]);
+    .split(bottom_area);
+    frame.render_widget(
+        undertab_block
+            .clone()
+            .border_type(BorderType::QuadrantInside)
+            .border_style(Style::default().bg(PLASTIC_DARK_BACKGROUND_COLOR))
+            .bg(MAC_RED_MUTED_COLOR),
+        bottom_area[0],
+    );
     frame.render_widget(name_line, undertab_block.inner(bottom_area[0]));
-    frame.render_widget(undertab_block.clone(), bottom_area[0]);
-    frame.render_widget(status_line, undertab_block.inner(bottom_area[1]));
     frame.render_widget(undertab_block.clone(), bottom_area[1]);
-    frame.render_widget(controls_line, undertab_block.inner(bottom_area[2]));
+    frame.render_widget(status_line, undertab_block.inner(bottom_area[1]));
     frame.render_widget(undertab_block.clone(), bottom_area[2]);
+    frame.render_widget(controls_line, undertab_block.inner(bottom_area[2]));
 
     if flags.debug {
         let debug_layout = Layout::new(
@@ -97,7 +106,7 @@ pub fn layout_frame(
                 Constraint::Fill(if show_log_panel { 1 } else { 0 }),
             ],
         )
-        .split(layout[0]);
+        .split(main_area);
 
         let inner = main_block.inner(debug_layout[0]);
         frame.render_widget(main_block, debug_layout[0]);
@@ -113,8 +122,8 @@ pub fn layout_frame(
 
         inner
     } else {
-        let inner = main_block.inner(layout[0]);
-        frame.render_widget(main_block, layout[0]);
+        let inner = main_block.inner(main_area);
+        frame.render_widget(main_block, main_area);
 
         inner
     }

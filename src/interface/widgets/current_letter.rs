@@ -3,7 +3,7 @@ use std::time::Duration;
 use bevy::prelude::*;
 use ratatui::layout::{Alignment, Size};
 use ratatui::style::Stylize;
-use ratatui::widgets::{Block, BorderType, Padding, Wrap};
+use ratatui::widgets::{Block, Padding, Wrap};
 use ratatui::{
     buffer::Buffer,
     layout::Rect,
@@ -15,9 +15,8 @@ use tachyonfx::{Effect, Interpolation, Motion, Shader, fx};
 use tui_scrollview::{ScrollView, ScrollViewState, ScrollbarVisibility};
 
 use crate::constants::{
-    LETTER_PADDING, MAC_GREEN_COLOR, MAC_RED_COLOR, PLASTIC_BLACK_BACKGROUND_COLOR,
-    PLASTIC_DARK_BACKGROUND_COLOR, PLASTIC_LIGHT_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR,
-    PLASTIC_SECONDARY_COLOR,
+    CUSTOM_BORDERS, LETTER_PADDING, MAC_GREEN_COLOR, MAC_RED_COLOR, PLASTIC_LIGHT_BACKGROUND_COLOR,
+    PLASTIC_MEDIUM_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR, PLASTIC_SECONDARY_COLOR,
 };
 use crate::sound::SoundEffect;
 use crate::{
@@ -174,7 +173,7 @@ impl StatefulWidget for &CurrentLetter {
 
         // title
         if title_revealed {
-            lines.push(Line::from(Span::styled(&self.title, Style::default().bold())).centered());
+            lines.push(Line::from(self.title.clone()).bold().centered());
         }
 
         // body
@@ -191,16 +190,13 @@ impl StatefulWidget for &CurrentLetter {
 
         // blessings header
         if blessings_header_revealed {
-            lines.push(Line::from(Span::styled(
-                "THOSE THAT CONTINUED THE CHAIN:",
-                Style::default().italic(),
-            )));
+            lines.push(Line::from("THOSE WHO CONTINUED THE CHAIN:").bold());
         }
 
         // blessings
         for i in 0..blessings_revealed.min(self.blessings.len()) {
             lines.push(Line::from(vec![
-                Span::styled("+ ", Style::default().fg(MAC_GREEN_COLOR)),
+                Span::from("+ ").fg(MAC_GREEN_COLOR),
                 Span::raw(&self.blessings[i]),
             ]));
         }
@@ -208,16 +204,13 @@ impl StatefulWidget for &CurrentLetter {
         // curses header
         if curses_header_revealed {
             lines.push(Line::from(""));
-            lines.push(Line::from(Span::styled(
-                "THOSE BROKE THE CHAIN:",
-                Style::default().italic(),
-            )));
+            lines.push(Line::from("THOSE WHO BROKE THE CHAIN:").bold());
         }
 
         // curses
         for i in 0..curses_revealed.min(self.curses.len()) {
             lines.push(Line::from(vec![
-                Span::styled("- ", Style::default().fg(MAC_RED_COLOR)),
+                Span::from("- ").fg(MAC_RED_COLOR),
                 Span::raw(&self.curses[i]),
             ]));
         }
@@ -232,10 +225,7 @@ impl StatefulWidget for &CurrentLetter {
         // footer
         if footer_revealed {
             lines.push(Line::from(""));
-            lines.push(Line::from(Span::styled(
-                &self.footer,
-                Style::default().fg(PLASTIC_SECONDARY_COLOR),
-            )));
+            lines.push(Line::from(self.footer.clone()).fg(PLASTIC_SECONDARY_COLOR));
         }
 
         // wrap in paragraph
@@ -250,13 +240,13 @@ impl StatefulWidget for &CurrentLetter {
 
         // containing block
         let mut block = Block::bordered()
-            .border_type(BorderType::QuadrantInside)
+            .border_set(CUSTOM_BORDERS)
             .border_style(
                 Style::default()
                     .fg(PLASTIC_PRIMARY_COLOR)
-                    .bg(PLASTIC_BLACK_BACKGROUND_COLOR),
+                    .bg(PLASTIC_MEDIUM_BACKGROUND_COLOR),
             )
-            .bg(PLASTIC_LIGHT_BACKGROUND_COLOR);
+            .bg(PLASTIC_MEDIUM_BACKGROUND_COLOR);
         let unpadded_block_inner_area = block.inner(area);
         let block_inner_area = Block::default()
             .padding(Padding::proportional(1))
