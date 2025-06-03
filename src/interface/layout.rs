@@ -12,14 +12,13 @@ use ratatui::{
 };
 use tui_logger::TuiLoggerWidget;
 
-use crate::{
-    constants::{
-        PLASTIC_DARK_BACKGROUND_COLOR, PLASTIC_LIGHT_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR,
-    },
-    draw::Flags,
+use crate::constants::{
+    PLASTIC_BLACK_BACKGROUND_COLOR, PLASTIC_DARK_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR
 };
 
-pub fn debug_frame(
+use super::draw::Flags;
+
+pub fn layout_frame(
     frame: &mut Frame,
     flags: &Flags,
     diagnostics: &DiagnosticsStore,
@@ -30,9 +29,9 @@ pub fn debug_frame(
         .render(frame.area(), frame.buffer_mut());
 
     let main_block = Block::bordered()
-        .border_type(BorderType::QuadrantInside)
+        .border_type(BorderType::Thick)
         .border_style(Style::default().bg(PLASTIC_DARK_BACKGROUND_COLOR))
-        .bg(PLASTIC_LIGHT_BACKGROUND_COLOR)
+        .bg(PLASTIC_BLACK_BACKGROUND_COLOR)
         .fg(PLASTIC_PRIMARY_COLOR);
     let undertab_block = Block::bordered()
         .border_type(BorderType::Thick)
@@ -49,12 +48,28 @@ pub fn debug_frame(
     let name_string = "CHAINMAIL";
     let name_line = Line::from(name_string).centered();
 
-    let mut settings_strings = vec![];
-    settings_strings.push(format!("sound: {}", if flags.sound { "ON" } else { "OFF" }));
-    let settings_string = settings_strings.join("  |  ");
-    let settings_line = Line::from(settings_string).centered();
+    let mut status_strings = vec![];
+    status_strings.push(format!("sound: {}", if flags.sound { "ON" } else { "OFF" }));
+    if flags.debug {
+        if let Some(value) = diagnostics
+            .get(&EntityCountDiagnosticsPlugin::ENTITY_COUNT)
+            .and_then(|count| count.value())
+        {
+            status_strings.push(format!("entities: {value}"));
+        }
 
-    let controls_string = ["M to toggle sound", "D to debug"].join("  |  ");
+        if let Some(value) = diagnostics
+            .get(&FrameTimeDiagnosticsPlugin::FPS)
+            .and_then(|fps| fps.smoothed())
+        {
+            status_strings.push(format!("fps: {value:3.0}"));
+        }
+
+    }
+    let status_string = status_strings.join("  |  ");
+    let status_line = Line::from(status_string).centered();
+
+    let controls_string = ["1 to debug", "2 to toggle sound"].join("  |  ");
     let controls_line = Line::from(controls_string.clone()).centered();
 
     let bottom_area = Layout::new(
@@ -69,7 +84,7 @@ pub fn debug_frame(
     .split(layout[1]);
     frame.render_widget(name_line, undertab_block.inner(bottom_area[0]));
     frame.render_widget(undertab_block.clone(), bottom_area[0]);
-    frame.render_widget(settings_line, undertab_block.inner(bottom_area[1]));
+    frame.render_widget(status_line, undertab_block.inner(bottom_area[1]));
     frame.render_widget(undertab_block.clone(), bottom_area[1]);
     frame.render_widget(controls_line, undertab_block.inner(bottom_area[2]));
     frame.render_widget(undertab_block.clone(), bottom_area[2]);
@@ -80,7 +95,6 @@ pub fn debug_frame(
             [
                 Constraint::Fill(2),
                 Constraint::Fill(if show_log_panel { 1 } else { 0 }),
-                Constraint::Length(2),
             ],
         )
         .split(layout[0]);
@@ -96,45 +110,6 @@ pub fn debug_frame(
                 debug_layout[1],
             );
         }
-
-        let mut debug_strings_left = vec![];
-        let mut debug_strings_right = vec![];
-
-        if let Some(value) = diagnostics
-            .get(&EntityCountDiagnosticsPlugin::ENTITY_COUNT)
-            .and_then(|count| count.value())
-        {
-            debug_strings_left.push(format!("entities: {value}"));
-        }
-
-        if let Some(value) = diagnostics
-            .get(&FrameTimeDiagnosticsPlugin::FPS)
-            .and_then(|fps| fps.smoothed())
-        {
-            debug_strings_right.push(format!("fps: {value:3.0}"));
-        }
-
-        let debug_string_left = debug_strings_left.join("  |  ");
-        let debug_string_right = debug_strings_right.join("  |  ");
-
-        let debug_line_layout = Layout::new(
-            Direction::Horizontal,
-            [
-                Constraint::Length(debug_string_left.len() as u16 + 8),
-                Constraint::Fill(1),
-                Constraint::Length(debug_string_right.len() as u16 + 8),
-            ],
-        )
-        .split(debug_layout[2]);
-
-        let debug_line_left = Line::from(debug_string_left).centered();
-        let debug_line_right = Line::from(debug_string_right).centered();
-
-        frame.render_widget(debug_line_left, undertab_block.inner(debug_line_layout[0]));
-        frame.render_widget(undertab_block.clone(), debug_line_layout[0]);
-        frame.render_widget(undertab_block.clone(), debug_line_layout[1]);
-        frame.render_widget(debug_line_right, undertab_block.inner(debug_line_layout[2]));
-        frame.render_widget(undertab_block.clone(), debug_line_layout[2]);
 
         inner
     } else {

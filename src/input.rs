@@ -1,5 +1,3 @@
-use crate::draw::Flags;
-use crate::widgets::current_letter::CurrentLetterState;
 #[cfg(feature = "windowed")]
 use bevy::input::mouse::MouseWheel;
 use bevy::prelude::*;
@@ -7,6 +5,9 @@ use bevy::prelude::*;
 use bevy_ratatui::event::KeyEvent as RatatuiKeyEvent;
 #[cfg(not(feature = "windowed"))]
 use bevy_ratatui::event::MouseEvent as RatatuiMouseEvent;
+
+use crate::interface::draw::Flags;
+use crate::interface::widgets::current_letter::CurrentLetterState;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(

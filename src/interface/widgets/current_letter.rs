@@ -15,8 +15,9 @@ use tachyonfx::{Effect, Interpolation, Motion, Shader, fx};
 use tui_scrollview::{ScrollView, ScrollViewState, ScrollbarVisibility};
 
 use crate::constants::{
-    LETTER_PADDING, MAC_GREEN_COLOR, MAC_RED_COLOR, PLASTIC_DARK_BACKGROUND_COLOR,
-    PLASTIC_LIGHT_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR, PLASTIC_SECONDARY_COLOR,
+    LETTER_PADDING, MAC_GREEN_COLOR, MAC_RED_COLOR, PLASTIC_BLACK_BACKGROUND_COLOR,
+    PLASTIC_DARK_BACKGROUND_COLOR, PLASTIC_LIGHT_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR,
+    PLASTIC_SECONDARY_COLOR,
 };
 use crate::sound::SoundEffect;
 use crate::{
@@ -253,9 +254,9 @@ impl StatefulWidget for &CurrentLetter {
             .border_style(
                 Style::default()
                     .fg(PLASTIC_PRIMARY_COLOR)
-                    .bg(PLASTIC_LIGHT_BACKGROUND_COLOR),
+                    .bg(PLASTIC_BLACK_BACKGROUND_COLOR),
             )
-            .bg(PLASTIC_DARK_BACKGROUND_COLOR);
+            .bg(PLASTIC_LIGHT_BACKGROUND_COLOR);
         let unpadded_block_inner_area = block.inner(area);
         let block_inner_area = Block::default()
             .padding(Padding::proportional(1))
