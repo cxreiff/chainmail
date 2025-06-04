@@ -21,7 +21,7 @@ pub struct SoundEffectAssets {
     #[asset(key = "sounds.curse_header")]
     pub curse_header: Handle<AudioSource>,
     #[asset(key = "sounds.curse", collection(typed))]
-    pub curse: Vec<Handle<AudioSource>>,
+    pub _curse: Vec<Handle<AudioSource>>,
 }
 
 #[derive(Event)]
@@ -55,7 +55,8 @@ fn sound_effects_observer(
         SoundEffect::BlessHeader => &handles.bless_header,
         SoundEffect::Bless => handles.bless.choose(&mut rng.0).unwrap(),
         SoundEffect::CurseHeader => &handles.curse_header,
-        SoundEffect::Curse => handles.curse.choose(&mut rng.0).unwrap(),
+        // TODO: switch back.
+        SoundEffect::Curse => handles.bless.choose(&mut rng.0).unwrap(),
     };
 
     commands.spawn((AudioPlayer(sound.clone()), PlaybackSettings::DESPAWN));

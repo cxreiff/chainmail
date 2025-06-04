@@ -15,26 +15,16 @@ use tachyonfx::{Effect, Interpolation, Motion, Shader, fx};
 use tui_scrollview::{ScrollView, ScrollViewState, ScrollbarVisibility};
 
 use crate::constants::{
-    CUSTOM_BORDERS, LETTER_PADDING, MAC_GREEN_COLOR, MAC_RED_COLOR, PLASTIC_LIGHT_BACKGROUND_COLOR,
-    PLASTIC_MEDIUM_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR, PLASTIC_SECONDARY_COLOR,
+    BLESSING_REVEAL_TIME, BODY_REVEAL_TIME, CURSE_REVEAL_TIME, CUSTOM_BORDERS, FOOTER_REVEAL_TIME,
+    HEADER_REVEAL_TIME, LETTER_PADDING, MAC_GREEN_COLOR, MAC_RED_COLOR,
+    PLASTIC_LIGHT_BACKGROUND_COLOR, PLASTIC_MEDIUM_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR,
+    PLASTIC_SECONDARY_COLOR, REVEAL_TIME_MARGIN, SIGNOFF_REVEAL_TIME, TITLE_REVEAL_TIME,
 };
 use crate::sound::SoundEffect;
 use crate::{
     letters::{Letter, LetterAssets},
     states::GameStates,
 };
-
-// Reveal timing constants (in milliseconds)
-const TITLE_REVEAL_TIME: u32 = 500;
-const BODY_REVEAL_TIME: u32 = 5;
-const HEADER_REVEAL_TIME: u32 = 400;
-const BLESSING_REVEAL_TIME: u32 = 400;
-const CURSE_REVEAL_TIME: u32 = 400;
-const SIGNOFF_REVEAL_TIME: u32 = 5;
-const FOOTER_REVEAL_TIME: u32 = 600;
-
-// Margin of delay after each reveal section (in milliseconds).
-const REVEAL_TIME_MARGIN: u32 = 400;
 
 pub(super) fn plugin(app: &mut App) {
     app.insert_non_send_resource(CurrentLetterState::default())

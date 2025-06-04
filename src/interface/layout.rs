@@ -14,7 +14,7 @@ use tui_logger::TuiLoggerWidget;
 
 use crate::constants::{
     MAC_RED_MUTED_COLOR, PLASTIC_DARK_BACKGROUND_COLOR, PLASTIC_LIGHT_BACKGROUND_COLOR,
-    PLASTIC_PRIMARY_COLOR,
+    PLASTIC_PRIMARY_COLOR, MAC_PURPLE_MUTED_COLOR,
 };
 
 use super::draw::Flags;
@@ -87,7 +87,6 @@ pub fn layout_frame(
     frame.render_widget(
         undertab_block
             .clone()
-            .border_type(BorderType::QuadrantInside)
             .border_style(Style::default().bg(PLASTIC_DARK_BACKGROUND_COLOR))
             .bg(MAC_RED_MUTED_COLOR),
         bottom_area[0],
@@ -95,7 +94,10 @@ pub fn layout_frame(
     frame.render_widget(name_line, undertab_block.inner(bottom_area[0]));
     frame.render_widget(undertab_block.clone(), bottom_area[1]);
     frame.render_widget(status_line, undertab_block.inner(bottom_area[1]));
-    frame.render_widget(undertab_block.clone(), bottom_area[2]);
+    frame.render_widget(undertab_block
+            .clone()
+            .border_style(Style::default().bg(PLASTIC_DARK_BACKGROUND_COLOR))
+            .bg(MAC_PURPLE_MUTED_COLOR), bottom_area[2]);
     frame.render_widget(controls_line, undertab_block.inner(bottom_area[2]));
 
     if flags.debug {
