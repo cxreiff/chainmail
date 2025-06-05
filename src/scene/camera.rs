@@ -14,7 +14,7 @@ fn camera_setup_system(mut commands: Commands) {
             ..default()
         },
         RatatuiCamera::default(),
-        RatatuiCameraStrategy::luminance_misc(),
+        RatatuiCameraStrategy::luminance_with_characters(&[' ', '@']),
         Camera3d::default(),
         Transform::from_xyz(0.0, 0.0, 1.0).looking_at(Vec3::ZERO, Vec3::Y),
         Msaa::Off,

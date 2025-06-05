@@ -18,6 +18,6 @@ pub(super) fn plugin(app: &mut App) {
             .set(ImagePlugin::default_nearest())
             .disable::<WinitPlugin>()
             .disable::<LogPlugin>(),
-        ScheduleRunnerPlugin::run_loop(Duration::from_secs_f32(1. / 60.)),
+        ScheduleRunnerPlugin::run_loop(Duration::from_secs_f32(1. / 90.)),
     ));
 }

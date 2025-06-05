@@ -6,14 +6,17 @@ use bevy_ratatui_camera::RatatuiCameraWidget;
 use ratatui::{
     layout::{Constraint, Layout, Rect},
     text::Line,
-    widgets::{Block, StatefulWidget, Widget},
+    widgets::{Block, Padding, StatefulWidget, Widget},
 };
 
 use crate::scene::spawning::Star;
 
 use super::{
     layout::layout_frame,
-    widgets::current_letter::{CurrentLetter, CurrentLetterState},
+    widgets::{
+        current_letter::{CurrentLetter, CurrentLetterState},
+        prompt::{Prompt, PromptState},
+    },
 };
 
 pub fn plugin(app: &mut App) {
@@ -35,6 +38,8 @@ fn draw_system(
     mut current_letter_state: NonSendMut<CurrentLetterState>,
     camera: Single<(&Camera, &GlobalTransform, &mut RatatuiCameraWidget)>,
     stars: Query<(&Star, &Transform)>,
+    prompt: Res<Prompt>,
+    mut prompt_state: ResMut<PromptState>,
 ) -> Result {
     let (camera, camera_transform, camera_widget) = camera.into_inner();
 
@@ -42,7 +47,7 @@ fn draw_system(
         let show_log_panel = !cfg!(feature = "windowed");
         let area = layout_frame(frame, &flags, &diagnostics, show_log_panel);
 
-        let buffer = frame.buffer_mut();
+        let buf = frame.buffer_mut();
 
         let left_width = (area.width * 2 / 5).min(120);
         let [left_area, right_area] =
@@ -51,11 +56,15 @@ fn draw_system(
             unreachable!()
         };
 
-        let letter_area = Block::new().inner(left_area);
-
-        if let Some(current_letter) = current_letter {
-            current_letter.render(letter_area, buffer, &mut current_letter_state);
+        let [scene_area, prompt_area] =
+            *Layout::vertical([Constraint::Fill(1), Constraint::Length(4)]).split(right_area)
+        else {
+            unreachable!()
         };
+
+        let prompt_area = Block::default()
+            .padding(Padding::new(0, 2, 0, 1))
+            .inner(prompt_area);
 
         let mut star_widgets = vec![];
         for (star, star_transform) in &stars {
@@ -65,7 +74,7 @@ fn draw_system(
                 continue;
             };
 
-            let position = camera_widget.ndc_to_cell(right_area, ndc_coords);
+            let position = camera_widget.ndc_to_cell(scene_area, ndc_coords);
             star_widgets.push((
                 Line::from(star.word.clone()),
                 Rect::new(
@@ -77,11 +86,45 @@ fn draw_system(
             ));
         }
 
-        Widget::render(camera_widget.into_inner().deref_mut(), right_area, buffer);
+        let mut character_pool = vec![];
+        if let Some(current_letter) = current_letter {
+            current_letter.render(left_area, buf, &mut current_letter_state);
+
+            character_pool = current_letter.body.chars().collect();
+        };
+
+        Widget::render(camera_widget.into_inner().deref_mut(), scene_area, buf);
+
+        for position in scene_area.positions() {
+            if buf[position].symbol() == "@" {
+                let index =
+                    (position.x + position.y * scene_area.width) as usize % character_pool.len();
+                buf[position].set_char(character_pool[index]);
+            }
+        }
+
+        for (index, cell) in buf.content.iter_mut().enumerate() {
+            if cell.symbol() == "@" {
+                let character = character_pool[index % character_pool.len()];
+                cell.set_char(character);
+            }
+        }
 
         for (star_widget, star_area) in &star_widgets {
-            star_widget.render(*star_area, buffer);
+            if scene_area.contains((star_area.x, star_area.y).into())
+                && scene_area.contains(
+                    (
+                        star_area.x + star_area.width,
+                        star_area.y + star_area.height,
+                    )
+                        .into(),
+                )
+            {
+                star_widget.render(*star_area, buf);
+            }
         }
+
+        prompt.render(prompt_area, buf, &mut prompt_state);
     })?;
 
     Ok(())
