@@ -4,7 +4,7 @@ use bevy_ratatui_camera::{RatatuiCamera, RatatuiCameraStrategy};
 use crate::states::GameStates;
 
 pub fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(GameStates::Playing), camera_setup_system);
+    app.add_systems(OnExit(GameStates::Loading), camera_setup_system);
 }
 
 fn camera_setup_system(mut commands: Commands) {

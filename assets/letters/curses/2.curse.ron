@@ -1,0 +1,5 @@
+Curse(
+    message: "Had a week of bad weather on vacation",
+    effect: Score(-200),
+    targets: [5],
+)

@@ -1,7 +1,22 @@
 ({
-    "letters": Files(
+    "letters.blessings": Files(
         paths: [
-            "letters/letter1.letter.ron",
+            "letters/blessings/1.blessing.ron",
+            "letters/blessings/2.blessing.ron",
+            "letters/blessings/3.blessing.ron",
+            "letters/blessings/4.blessing.ron",
+        ],
+    ),
+    "letters.curses": Files(
+        paths: [
+            "letters/curses/1.curse.ron",
+            "letters/curses/2.curse.ron",
+            "letters/curses/3.curse.ron",
+        ],
+    ),
+    "letters.flavors": Files(
+        paths: [
+            "letters/flavors/1.flavor.ron",
         ],
     ),
     "sounds.slam": Files(
@@ -29,5 +44,8 @@
         paths: [
             "sounds/curse1.ogg",
         ],
+    ),
+    "sounds.start": File(
+        path: "sounds/start.ogg",
     ),
 })

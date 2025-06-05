@@ -1,0 +1,5 @@
+Blessing(
+    message: "David K. won a contest he had forgotten entering",
+    effect: Money(200),
+    targets: [7],
+)

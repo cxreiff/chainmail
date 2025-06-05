@@ -1,0 +1,5 @@
+Curse(
+    message: "Lost their keys the very next day",
+    effect: Score(-100),
+    targets: [2],
+)

@@ -17,6 +17,7 @@ mod states;
 mod terminal;
 #[cfg(feature = "windowed")]
 mod windowed;
+mod word_checks;
 
 pub struct AppPlugin;
 
@@ -50,6 +51,7 @@ impl Plugin for AppPlugin {
             sound::plugin,
             scene::plugin,
             states::plugin,
+            word_checks::plugin,
         ));
 
         app.insert_resource(ClearColor(Color::srgba(0., 0., 0., 0.)));

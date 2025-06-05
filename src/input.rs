@@ -1,18 +1,18 @@
+use crate::interface::widgets::prompt::Prompt;
 #[cfg(feature = "windowed")]
-use bevy::input::mouse::MouseWheel;
+use bevy::input::ButtonState;
 #[cfg(feature = "windowed")]
 use bevy::input::keyboard::KeyboardInput;
 #[cfg(feature = "windowed")]
-use bevy::input::ButtonState;
+use bevy::input::mouse::MouseWheel;
 use bevy::prelude::*;
 #[cfg(not(feature = "windowed"))]
 use bevy_ratatui::event::KeyEvent as RatatuiKeyEvent;
 #[cfg(not(feature = "windowed"))]
 use bevy_ratatui::event::MouseEvent as RatatuiMouseEvent;
-use crate::interface::widgets::prompt::Prompt;
 
 use crate::interface::draw::Flags;
-use crate::interface::widgets::current_letter::CurrentLetterState;
+use crate::interface::widgets::letter::LetterWidgetState;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
@@ -27,12 +27,15 @@ pub(super) fn plugin(app: &mut App) {
 
 #[cfg(not(feature = "windowed"))]
 fn handle_keyboard_input_system(
+    mut commands: Commands,
     mut keyboard_input: EventReader<RatatuiKeyEvent>,
     mut flags: ResMut<Flags>,
-    mut current_letter_state: NonSendMut<CurrentLetterState>,
+    mut current_letter_state: NonSendMut<LetterWidgetState>,
 ) {
     use bevy_ratatui::crossterm::event::KeyCode;
     use bevy_ratatui::crossterm::event::KeyEventKind;
+
+    use crate::word_checks::SubmittedWord;
 
     for event in keyboard_input.read() {
         if event.kind == KeyEventKind::Press {
@@ -48,6 +51,9 @@ fn handle_keyboard_input_system(
             if let KeyCode::Down = event.code {
                 current_letter_state.scroll_state.scroll_down();
             }
+            if let KeyCode::Enter = event.code {
+                commands.trigger(SubmittedWord);
+            }
         }
     }
 }
@@ -55,7 +61,7 @@ fn handle_keyboard_input_system(
 #[cfg(not(feature = "windowed"))]
 fn handle_mouse_input_system(
     mut mouse_input: EventReader<RatatuiMouseEvent>,
-    mut letter_state: NonSendMut<CurrentLetterState>,
+    mut letter_state: NonSendMut<LetterWidgetState>,
 ) {
     use ratatui::crossterm::event::MouseEventKind;
 
@@ -76,7 +82,7 @@ fn handle_mouse_input_system(
 fn handle_keyboard_input_system(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut flags: ResMut<Flags>,
-    mut current_letter_state: NonSendMut<CurrentLetterState>,
+    mut current_letter_state: NonSendMut<LetterWidgetState>,
 ) {
     for &press in keyboard_input.get_just_pressed() {
         if press == KeyCode::Digit1 {
@@ -96,7 +102,7 @@ fn handle_keyboard_input_system(
 
 #[cfg(feature = "windowed")]
 fn handle_mouse_input_system(
-    mut letter_state: NonSendMut<CurrentLetterState>,
+    mut letter_state: NonSendMut<LetterWidgetState>,
     mut mouse_wheel_events: EventReader<MouseWheel>,
 ) {
     for event in mouse_wheel_events.read() {

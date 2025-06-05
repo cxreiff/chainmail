@@ -1,0 +1,5 @@
+Blessing(
+    message: "Sarah M. received unexpected money 4 days later",
+    effect: Money(20),
+    targets: [3],
+)

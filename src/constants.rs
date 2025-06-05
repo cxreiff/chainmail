@@ -3,7 +3,7 @@ use ratatui::{style::Color, symbols::border};
 pub const PLASTIC_EMPHASIS_COLOR: Color = Color::from_u32(0x00E3E1C9);
 pub const PLASTIC_PRIMARY_COLOR: Color = Color::from_u32(0x00EEF1D8);
 pub const PLASTIC_SECONDARY_COLOR: Color = Color::from_u32(0x00C5BEBE);
-pub const PLASTIC_LIGHTER_BACKGROUND_COLOR: Color = Color::from_u32(0x00485b63);
+pub const _PLASTIC_LIGHTER_BACKGROUND_COLOR: Color = Color::from_u32(0x00485b63);
 pub const PLASTIC_LIGHT_BACKGROUND_COLOR: Color = Color::from_u32(0x00384B53);
 pub const PLASTIC_MEDIUM_BACKGROUND_COLOR: Color = Color::from_u32(0x00282c31);
 pub const PLASTIC_DARK_BACKGROUND_COLOR: Color = Color::from_u32(0x00151515);
@@ -26,6 +26,11 @@ pub const _MAC_CYAN_MUTED_COLOR: Color = Color::from_u32(0x00385670);
 pub const LETTER_PADDING: u16 = 1;
 
 pub const STAR_LENGTH: f32 = 0.5;
+
+pub const MIN_BLESSING_AMOUNT: usize = 2;
+pub const MAX_BLESSING_AMOUNT: usize = 5;
+pub const MIN_CURSE_AMOUNT: usize = 2;
+pub const MAX_CURSE_AMOUNT: usize = 5;
 
 pub const CUSTOM_BORDERS: border::Set = border::Set {
     vertical_left: border::DOUBLE.vertical_left,
@@ -57,6 +62,7 @@ pub const BLESSING_REVEAL_TIME: u32 = 400;
 pub const CURSE_REVEAL_TIME: u32 = 400;
 pub const SIGNOFF_REVEAL_TIME: u32 = 5;
 pub const FOOTER_REVEAL_TIME: u32 = 600;
+pub const FINISHED_TIME: u32 = 800;
 
 // Margin of delay after each reveal section (in milliseconds)
 pub const REVEAL_TIME_MARGIN: u32 = 400;

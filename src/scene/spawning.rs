@@ -1,6 +1,7 @@
 use std::time::Duration;
 
 use bevy::{prelude::*, time::common_conditions::on_timer};
+use bevy_ratatui_camera::RatatuiCamera;
 use rand::distributions::uniform::SampleRange;
 use rand_chacha::{
     ChaCha8Rng,
@@ -11,11 +12,11 @@ use crate::{constants::STAR_LENGTH, states::GameStates};
 
 pub fn plugin(app: &mut App) {
     app.init_resource::<StarRng>()
-        .add_systems(OnEnter(GameStates::Playing), scene_setup_system)
+        .add_systems(OnExit(GameStates::Loading), scene_setup_system)
         .add_systems(
             Update,
             (
-                star_spawn_system.run_if(on_timer(Duration::from_millis(250))),
+                star_spawn_system.run_if(on_timer(Duration::from_millis(500))),
                 star_move_system,
                 star_despawn_system,
             )
@@ -26,11 +27,15 @@ pub fn plugin(app: &mut App) {
 #[derive(Component, Debug, Default)]
 pub struct Star {
     pub word: String,
+    pub color: Color,
 }
 
 impl Star {
-    fn new(word: &str) -> Self {
-        Self { word: word.into() }
+    fn new(word: &str, color: Color) -> Self {
+        Self {
+            word: word.into(),
+            color,
+        }
     }
 }
 
@@ -52,22 +57,20 @@ fn star_spawn_system(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut rng: ResMut<StarRng>,
-    camera: Single<(&Camera, &GlobalTransform)>,
+    camera: Single<(&Camera, &GlobalTransform), With<RatatuiCamera>>,
 ) {
     let (camera, camera_transform) = camera.into_inner();
-    let Some(spawn_position) = get_spawn_position(camera, camera_transform, 3.0, 8.0, &mut rng)
+    let Some(spawn_position) = get_spawn_position(camera, camera_transform, 2.0, 5.0, &mut rng)
     else {
         return;
     };
 
+    let color = Color::hsl(((rng.next_u32() % 180 + 165) % 360) as f32, 0.3, 0.4);
+
     commands.spawn((
-        Star::new("egg"),
+        Star::new("egg", color),
         Mesh3d(meshes.add(Cuboid::from_length(STAR_LENGTH))),
-        MeshMaterial3d(materials.add(Color::hsl(
-            ((rng.next_u32() % 180 + 165) % 360) as f32,
-            0.3,
-            0.4,
-        ))),
+        MeshMaterial3d(materials.add(color)),
         Transform::from_translation(spawn_position),
     ));
 }
@@ -83,10 +86,10 @@ fn star_move_system(time: Res<Time>, mut stars: Query<&mut Transform, With<Star>
 fn star_despawn_system(
     mut commands: Commands,
     mut stars: Query<(Entity, &mut Transform), With<Star>>,
-    camera: Single<(&Camera, &GlobalTransform)>,
+    camera: Single<(&Camera, &GlobalTransform), With<RatatuiCamera>>,
 ) {
     let (camera, camera_transform) = camera.into_inner();
-    let Some(lowest_visible_y) = get_lowest_visible_y(camera, camera_transform, 10.0) else {
+    let Some(lowest_visible_y) = get_lowest_visible_y(camera, camera_transform, 5.0) else {
         return;
     };
 

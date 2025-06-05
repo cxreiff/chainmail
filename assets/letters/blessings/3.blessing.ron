@@ -1,0 +1,5 @@
+Blessing(
+    message: "Maria L. met her true love 9 days after sending",
+    effect: Score(100),
+    targets: [4],
+)

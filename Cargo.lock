@@ -1273,6 +1273,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_shuffle_bag"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d0de164d02db147c74925ea3dd702845abbed64ca5763767d23c7f30777bacda"
+dependencies = [
+ "bevy",
+ "rand",
+ "tracing",
+]
+
+[[package]]
 name = "bevy_sprite"
 version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1806,6 +1817,7 @@ dependencies = [
  "bevy_common_assets",
  "bevy_ratatui",
  "bevy_ratatui_camera",
+ "bevy_shuffle_bag",
  "log",
  "rand",
  "rand_chacha",
@@ -1814,7 +1826,6 @@ dependencies = [
  "tachyonfx",
  "tracing",
  "tui-logger",
- "tui-prompts",
  "tui-scrollview",
 ]
 
@@ -4495,15 +4506,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ratatui-macros"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6fef540f80dbe8a0773266fa6077788ceb65ef624cdbf36e131aaf90b4a52df4"
-dependencies = [
- "ratatui",
-]
-
-[[package]]
 name = "rav1e"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5494,18 +5496,6 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "unicode-segmentation",
-]
-
-[[package]]
-name = "tui-prompts"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eb6e0d8a972545cc209b933a1c06dab8932674b54ae19947834ec854fec2364f"
-dependencies = [
- "itertools 0.13.0",
- "ratatui",
- "ratatui-macros",
- "rstest",
 ]
 
 [[package]]

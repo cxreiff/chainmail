@@ -5,16 +5,17 @@ use bevy_ratatui::RatatuiContext;
 use bevy_ratatui_camera::RatatuiCameraWidget;
 use ratatui::{
     layout::{Constraint, Layout, Rect},
+    style::Stylize,
     text::Line,
     widgets::{Block, Padding, StatefulWidget, Widget},
 };
 
-use crate::scene::spawning::Star;
+use crate::{letters::CurrentLetter, scene::spawning::Star};
 
 use super::{
     layout::layout_frame,
     widgets::{
-        current_letter::{CurrentLetter, CurrentLetterState},
+        letter::{LetterWidget, LetterWidgetState},
         prompt::{Prompt, PromptState},
     },
 };
@@ -35,7 +36,7 @@ fn draw_system(
     flags: Res<Flags>,
     diagnostics: Res<DiagnosticsStore>,
     current_letter: Option<Res<CurrentLetter>>,
-    mut current_letter_state: NonSendMut<CurrentLetterState>,
+    mut current_letter_state: NonSendMut<LetterWidgetState>,
     camera: Single<(&Camera, &GlobalTransform, &mut RatatuiCameraWidget)>,
     stars: Query<(&Star, &Transform)>,
     prompt: Res<Prompt>,
@@ -75,8 +76,32 @@ fn draw_system(
             };
 
             let position = camera_widget.ndc_to_cell(scene_area, ndc_coords);
+            let Srgba {
+                red: lighter_red,
+                blue: lighter_blue,
+                green: lighter_green,
+                ..
+            } = star.color.lighter(0.3).to_srgba();
+            let lighter_color = ratatui::style::Color::Rgb(
+                (lighter_red * 256.) as u8,
+                (lighter_green * 256.) as u8,
+                (lighter_blue * 256.) as u8,
+            );
+            let Srgba {
+                red: darker_red,
+                blue: darker_blue,
+                green: darker_green,
+                ..
+            } = star.color.darker(0.0).to_srgba();
+            let darker_color = ratatui::style::Color::Rgb(
+                (darker_red * 256.) as u8,
+                (darker_green * 256.) as u8,
+                (darker_blue * 256.) as u8,
+            );
             star_widgets.push((
-                Line::from(star.word.clone()),
+                Line::from(star.word.clone())
+                    .fg(lighter_color)
+                    .bg(darker_color),
                 Rect::new(
                     position.x as u16,
                     position.y as u16,
@@ -86,43 +111,36 @@ fn draw_system(
             ));
         }
 
-        let mut character_pool = vec![];
         if let Some(current_letter) = current_letter {
-            current_letter.render(left_area, buf, &mut current_letter_state);
+            LetterWidget(&current_letter.0).render(left_area, buf, &mut current_letter_state);
 
-            character_pool = current_letter.body.chars().collect();
-        };
+            let character_pool: Vec<_> = current_letter.flavor.body.chars().collect();
 
-        Widget::render(camera_widget.into_inner().deref_mut(), scene_area, buf);
+            Widget::render(camera_widget.into_inner().deref_mut(), scene_area, buf);
 
-        for position in scene_area.positions() {
-            if buf[position].symbol() == "@" {
-                let index =
-                    (position.x + position.y * scene_area.width) as usize % character_pool.len();
-                buf[position].set_char(character_pool[index]);
+            for position in scene_area.positions() {
+                if buf[position].symbol() == "@" {
+                    let _offset = (prompt.timer.remaining_secs() * 14.0) as u16;
+                    let index = position.x + position.y * scene_area.width;
+                    let wrapped_index = index as usize % character_pool.len();
+                    buf[position].set_char(character_pool[wrapped_index]);
+                }
             }
-        }
 
-        for (index, cell) in buf.content.iter_mut().enumerate() {
-            if cell.symbol() == "@" {
-                let character = character_pool[index % character_pool.len()];
-                cell.set_char(character);
-            }
-        }
-
-        for (star_widget, star_area) in &star_widgets {
-            if scene_area.contains((star_area.x, star_area.y).into())
-                && scene_area.contains(
-                    (
-                        star_area.x + star_area.width,
-                        star_area.y + star_area.height,
+            for (star_widget, star_area) in &star_widgets {
+                if scene_area.contains((star_area.x, star_area.y).into())
+                    && scene_area.contains(
+                        (
+                            star_area.x + star_area.width,
+                            star_area.y + star_area.height,
+                        )
+                            .into(),
                     )
-                        .into(),
-                )
-            {
-                star_widget.render(*star_area, buf);
+                {
+                    star_widget.render(*star_area, buf);
+                }
             }
-        }
+        };
 
         prompt.render(prompt_area, buf, &mut prompt_state);
     })?;

@@ -9,7 +9,7 @@ use crate::{letters::LetterAssets, sound::SoundEffectAssets, states::GameStates}
 pub(super) fn plugin(app: &mut App) {
     app.add_loading_state(
         LoadingState::new(GameStates::Loading)
-            .continue_to_state(GameStates::Playing)
+            .continue_to_state(GameStates::Printing)
             .with_dynamic_assets_file::<StandardDynamicAssetCollection>("assets.ron")
             .load_collection::<LetterAssets>()
             .load_collection::<SoundEffectAssets>(),

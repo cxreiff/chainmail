@@ -12,8 +12,7 @@ use ratatui::{
 use crate::{
     constants::{
         CURSOR_BLINK_SPEED, CUSTOM_BORDERS_UNDER, MAC_PURPLE_MUTED_COLOR, PLASTIC_EMPHASIS_COLOR,
-        PLASTIC_LIGHTER_BACKGROUND_COLOR, PLASTIC_MEDIUM_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR,
-        PLASTIC_SECONDARY_COLOR,
+        PLASTIC_MEDIUM_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR, PLASTIC_SECONDARY_COLOR,
     },
     states::GameStates,
 };
@@ -21,13 +20,14 @@ use crate::{
 pub(super) fn plugin(app: &mut App) {
     app.init_resource::<Prompt>()
         .init_resource::<PromptState>()
-        .add_systems(OnEnter(GameStates::Playing), timer_setup_system)
+        .add_systems(OnEnter(GameStates::Printing), timer_setup_system)
         .add_systems(
             Update,
             (
                 tick_timer_system,
                 blink_prompt_system.run_if(on_timer(Duration::from_millis(CURSOR_BLINK_SPEED))),
-            ),
+            )
+                .run_if(in_state(GameStates::Playing)),
         );
 }
 
@@ -92,14 +92,18 @@ impl StatefulWidget for &Prompt {
     }
 }
 
+fn timer_setup_system(mut prompt: ResMut<Prompt>) {
+    prompt.timer = Timer::from_seconds(20.0, TimerMode::Once);
+}
+
 fn blink_prompt_system(mut prompt_state: ResMut<PromptState>) {
     prompt_state.cursor_visible = !prompt_state.cursor_visible;
 }
 
-fn tick_timer_system(time: Res<Time>, mut prompt: ResMut<Prompt>) {
+fn tick_timer_system(mut commands: Commands, time: Res<Time>, mut prompt: ResMut<Prompt>) {
     prompt.timer.tick(time.delta());
-}
 
-fn timer_setup_system(mut prompt: ResMut<Prompt>) {
-    prompt.timer = Timer::from_seconds(60.0, TimerMode::Once);
+    if prompt.timer.finished() {
+        commands.set_state(GameStates::Printing);
+    }
 }

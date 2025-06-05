@@ -4,8 +4,7 @@ use rand::{SeedableRng, seq::SliceRandom};
 use rand_chacha::ChaCha8Rng;
 
 pub(super) fn plugin(app: &mut App) {
-    app.init_resource::<SoundEffectRng>()
-        .add_observer(sound_effects_observer);
+    app.add_observer(sound_effects_observer);
 }
 
 #[derive(AssetCollection, Resource)]
@@ -22,6 +21,8 @@ pub struct SoundEffectAssets {
     pub curse_header: Handle<AudioSource>,
     #[asset(key = "sounds.curse", collection(typed))]
     pub _curse: Vec<Handle<AudioSource>>,
+    #[asset(key = "sounds.start")]
+    pub start: Handle<AudioSource>,
 }
 
 #[derive(Event)]
@@ -32,12 +33,13 @@ pub enum SoundEffect {
     Bless,
     CurseHeader,
     Curse,
+    Start,
 }
 
 #[derive(Resource, Deref, DerefMut)]
-pub struct SoundEffectRng(ChaCha8Rng);
+struct RngResource(ChaCha8Rng);
 
-impl Default for SoundEffectRng {
+impl Default for RngResource {
     fn default() -> Self {
         Self(ChaCha8Rng::seed_from_u64(19878367467712))
     }
@@ -47,7 +49,7 @@ fn sound_effects_observer(
     trigger: Trigger<SoundEffect>,
     mut commands: Commands,
     handles: Res<SoundEffectAssets>,
-    mut rng: ResMut<SoundEffectRng>,
+    mut rng: Local<RngResource>,
 ) {
     let sound = match trigger.event() {
         SoundEffect::Slam => handles.slam.choose(&mut rng.0).unwrap(),
@@ -57,6 +59,7 @@ fn sound_effects_observer(
         SoundEffect::CurseHeader => &handles.curse_header,
         // TODO: switch back.
         SoundEffect::Curse => handles.bless.choose(&mut rng.0).unwrap(),
+        SoundEffect::Start => &handles.start,
     };
 
     commands.spawn((AudioPlayer(sound.clone()), PlaybackSettings::DESPAWN));

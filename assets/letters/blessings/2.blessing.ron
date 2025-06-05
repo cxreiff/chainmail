@@ -1,0 +1,5 @@
+Blessing(
+    message: "Jim T. got the job he wanted within a week",
+    effect: Income(2),
+    targets: [6],
+)
