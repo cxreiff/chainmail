@@ -11,16 +11,21 @@ use ratatui::{
 
 use crate::{
     constants::{
-        CURSOR_BLINK_SPEED, CUSTOM_BORDERS_UNDER, MAC_PURPLE_MUTED_COLOR, PLASTIC_EMPHASIS_COLOR,
-        PLASTIC_MEDIUM_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR, PLASTIC_SECONDARY_COLOR,
+        CURSOR_BLINK_SPEED, CUSTOM_BORDERS_UNDER, MAC_CYAN_COLOR, MAC_RED_MUTED_COLOR,
+        PLASTIC_EMPHASIS_COLOR, PLASTIC_MEDIUM_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR,
+        PLASTIC_SECONDARY_COLOR,
     },
-    states::GameStates,
+    letters::CurrentLetter,
+    states::{GameStates, LetterFailed, generate_current_letter_system},
 };
 
 pub(super) fn plugin(app: &mut App) {
     app.init_resource::<Prompt>()
         .init_resource::<PromptState>()
-        .add_systems(OnEnter(GameStates::Printing), timer_setup_system)
+        .add_systems(
+            OnEnter(GameStates::Printing),
+            timer_setup_system.after(generate_current_letter_system),
+        )
         .add_systems(
             Update,
             (
@@ -77,23 +82,24 @@ impl StatefulWidget for &Prompt {
             Span::from(cursor).fg(PLASTIC_SECONDARY_COLOR),
         ]);
 
-        let timer_text = Line::from(format!(" {:.1}s ", self.timer.remaining_secs()));
+        let timer_text =
+            Line::from(format!(" {:.1}s ", self.timer.remaining_secs())).fg(MAC_CYAN_COLOR);
 
         Block::default()
-            .bg(MAC_PURPLE_MUTED_COLOR)
+            .bg(MAC_RED_MUTED_COLOR)
             .render(remaining_area, buf);
         Block::default()
             .bg(PLASTIC_MEDIUM_BACKGROUND_COLOR)
             .render(elapsed_area, buf);
 
+        block.render(area, buf);
         text.render(text_area, buf);
         timer_text.render(timer_area, buf);
-        block.render(area, buf);
     }
 }
 
-fn timer_setup_system(mut prompt: ResMut<Prompt>) {
-    prompt.timer = Timer::from_seconds(20.0, TimerMode::Once);
+fn timer_setup_system(mut prompt: ResMut<Prompt>, current_letter: Res<CurrentLetter>) {
+    prompt.timer = Timer::from_seconds(current_letter.time_limit as f32, TimerMode::Once);
 }
 
 fn blink_prompt_system(mut prompt_state: ResMut<PromptState>) {
@@ -104,6 +110,6 @@ fn tick_timer_system(mut commands: Commands, time: Res<Time>, mut prompt: ResMut
     prompt.timer.tick(time.delta());
 
     if prompt.timer.finished() {
-        commands.set_state(GameStates::Printing);
+        commands.trigger(LetterFailed);
     }
 }

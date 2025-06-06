@@ -20,6 +20,7 @@ use crate::constants::{
     PLASTIC_LIGHT_BACKGROUND_COLOR, PLASTIC_MEDIUM_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR,
     PLASTIC_SECONDARY_COLOR, REVEAL_TIME_MARGIN, SIGNOFF_REVEAL_TIME, TITLE_REVEAL_TIME,
 };
+use crate::interface::utilities::interpolate_and_truncate;
 use crate::letters::CurrentLetter;
 use crate::sound::SoundEffect;
 use crate::{letters::Letter, states::GameStates};
@@ -28,15 +29,20 @@ pub(super) fn plugin(app: &mut App) {
     app.insert_non_send_resource(LetterWidgetState::default())
         .add_systems(
             Update,
-            letter_reveal_system.run_if(in_state(GameStates::Printing)),
-        );
+            (
+                letter_reveal_system.run_if(in_state(GameStates::Printing)),
+                effect_tick_system.run_if(in_state(GameStates::Printing)),
+                effect_tick_system.run_if(in_state(GameStates::Resetting)),
+            ),
+        )
+        .add_systems(OnEnter(GameStates::Resetting), effect_reverse_system);
 }
 
 #[derive(Resource, Deref, DerefMut, Debug)]
 pub struct LetterWidget<'a>(pub &'a Letter);
 
 pub struct LetterWidgetState {
-    effect: Effect,
+    pub effect: Effect,
     pub scroll_state: ScrollViewState,
     revealed: LetterWidgetRevealed,
 }
@@ -81,13 +87,13 @@ impl LetterWidgetRevealed {
         time_cursor += TITLE_REVEAL_TIME + REVEAL_TIME_MARGIN;
 
         // body
-        let body_time = letter.flavor.body.len() as u32 * BODY_REVEAL_TIME;
+        let body_time = letter.interpolated_flavor.body.len() as u32 * BODY_REVEAL_TIME;
         let body_chars_revealed = if elapsed_ms > time_cursor {
             ((elapsed_ms - time_cursor) / BODY_REVEAL_TIME) as usize
         } else {
             0
         }
-        .min(letter.flavor.body.len());
+        .min(letter.interpolated_flavor.body.len());
         time_cursor += body_time + REVEAL_TIME_MARGIN;
 
         // blessings header
@@ -122,9 +128,9 @@ impl LetterWidgetRevealed {
         } else {
             0
         }
-        .min(letter.flavor.signoff.len());
-        time_cursor +=
-            letter.flavor.signoff.len() as u32 * SIGNOFF_REVEAL_TIME + REVEAL_TIME_MARGIN;
+        .min(letter.interpolated_flavor.signoff.len());
+        time_cursor += letter.interpolated_flavor.signoff.len() as u32 * SIGNOFF_REVEAL_TIME
+            + REVEAL_TIME_MARGIN;
 
         // footer
         let footer_revealed = elapsed_ms >= time_cursor + FOOTER_REVEAL_TIME;
@@ -173,12 +179,13 @@ impl StatefulWidget for &LetterWidget<'_> {
         // body
         if body_chars_revealed > 0 {
             lines.push(Line::from(""));
-            let revealed_body =
-                &self.flavor.body[..body_chars_revealed.min(self.flavor.body.len())];
-            for line in revealed_body.lines() {
-                lines.push(Line::from(line));
-            }
-            if body_chars_revealed >= self.flavor.body.len() {
+            lines.push(interpolate_and_truncate(
+                &self.flavor.body,
+                body_chars_revealed.min(self.interpolated_flavor.body.len()),
+                &self.recipients.to_string(),
+                &self.time_limit.to_string(),
+            ));
+            if body_chars_revealed >= self.interpolated_flavor.body.len() {
                 lines.push(Line::from(""));
             }
         }
@@ -190,9 +197,18 @@ impl StatefulWidget for &LetterWidget<'_> {
 
         // blessings
         for i in 0..blessings_revealed.min(self.blessings.len()) {
+            let blessing = &self.blessings[i];
+
+            let message = if blessing.collected {
+                Span::from(blessing.message.replace("_*", &blessing.target_word))
+                    .fg(MAC_GREEN_COLOR)
+            } else {
+                Span::from(&blessing.message)
+            };
+
             lines.push(Line::from(vec![
                 Span::from("+ ").fg(MAC_GREEN_COLOR),
-                Span::raw(&self.blessings[i].message),
+                message,
             ]));
         }
 
@@ -204,18 +220,29 @@ impl StatefulWidget for &LetterWidget<'_> {
 
         // curses
         for i in 0..curses_revealed.min(self.curses.len()) {
+            let curse = &self.curses[i];
+
+            let message = if curse.collected {
+                Span::from(curse.message.replace("_*", &curse.target_word)).fg(MAC_RED_COLOR)
+            } else {
+                Span::from(&curse.message)
+            };
+
             lines.push(Line::from(vec![
                 Span::from("- ").fg(MAC_RED_COLOR),
-                Span::raw(&self.curses[i].message),
+                message,
             ]));
         }
 
         // signoff
         if signoff_chars_revealed > 0 {
             lines.push(Line::from(""));
-            let revealed_signoff =
-                &self.flavor.signoff[..signoff_chars_revealed.min(self.flavor.signoff.len())];
-            lines.push(Line::from(revealed_signoff));
+            lines.push(interpolate_and_truncate(
+                &self.flavor.signoff,
+                signoff_chars_revealed.min(self.interpolated_flavor.signoff.len()),
+                &self.recipients.to_string(),
+                &self.time_limit.to_string(),
+            ));
         }
 
         // footer
@@ -309,6 +336,18 @@ pub fn letter_reveal_system(
             .timer_mut()
             .and_then(|t| t.process(time.delta().into()));
     }
+}
+
+fn effect_reverse_system(mut current_letter_state: NonSendMut<LetterWidgetState>) {
+    current_letter_state.effect.reverse();
+    current_letter_state.effect.reset();
+}
+
+fn effect_tick_system(time: Res<Time>, mut current_letter_state: NonSendMut<LetterWidgetState>) {
+    current_letter_state
+        .effect
+        .timer_mut()
+        .and_then(|t| t.process(time.delta().into()));
 }
 
 fn trigger_reveal_sound_effects(

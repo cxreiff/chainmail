@@ -1,5 +1,5 @@
-Blessing(
-    message: "David K. won a contest he had forgotten entering",
+TestimonialStub(
+    message: "won a contest {pronoun_subject} had forgotten entering",
     effect: Money(200),
-    targets: [7],
+    targets: [5],
 )

@@ -1,6 +1,6 @@
 Flavor(
     title: "CHAIN OF GOOD FORTUNE",
-    body: "This letter has been around the world many times and brings good luck to all who continue the chain. Copy this letter exactly and send it to {recipients} friends within {time_limit} hours. Do not break the chain!",
+    body: "This letter has been around the world many times and brings good luck to all who continue the chain. Copy this letter exactly and send it to {recipients} friends within {time_limit} seconds. Do not break the chain!",
     signoff: "This is not a joke! The chain must not be broken. Send to {recipients} people you care about. Good luck will come to you, but only if you keep the chain alive!",
     footer: "This letter originated in 1953 and has circled the globe bringing fortune to thousands.",
 )

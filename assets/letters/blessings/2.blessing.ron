@@ -1,5 +1,5 @@
-Blessing(
-    message: "Jim T. got the job he wanted within a week",
+TestimonialStub(
+    message: "got the job {pronoun_subject} wanted within a week",
     effect: Income(2),
-    targets: [6],
+    targets: [4],
 )

@@ -3,46 +3,44 @@ use std::time::Duration;
 use bevy::{prelude::*, time::common_conditions::on_timer};
 use bevy_ratatui_camera::RatatuiCamera;
 use rand::distributions::uniform::SampleRange;
-use rand_chacha::{
-    ChaCha8Rng,
-    rand_core::{RngCore, SeedableRng},
-};
+use rand_chacha::{ChaCha8Rng, rand_core::SeedableRng};
 
-use crate::{constants::STAR_LENGTH, states::GameStates};
+use crate::{constants::WORD_CUBE_LENGTH, letters::WordBag, states::GameStates};
 
 pub fn plugin(app: &mut App) {
-    app.init_resource::<StarRng>()
-        .add_systems(OnExit(GameStates::Loading), scene_setup_system)
+    app.add_systems(OnExit(GameStates::Loading), scene_setup_system)
         .add_systems(
             Update,
             (
-                star_spawn_system.run_if(on_timer(Duration::from_millis(500))),
-                star_move_system,
-                star_despawn_system,
+                word_cube_spawn_system.run_if(on_timer(Duration::from_millis(1200))),
+                word_cube_move_system,
+                word_cube_despawn_system,
             )
                 .run_if(in_state(GameStates::Playing)),
         );
 }
 
-#[derive(Component, Debug, Default)]
-pub struct Star {
+#[derive(Component, Debug, Default, Clone)]
+pub struct WordCube {
     pub word: String,
     pub color: Color,
+    pub despawn_character: char,
 }
 
-impl Star {
-    fn new(word: &str, color: Color) -> Self {
+impl WordCube {
+    pub fn new(word: &str, color: Color, despawn_character: char) -> Self {
         Self {
             word: word.into(),
             color,
+            despawn_character,
         }
     }
 }
 
 #[derive(Resource, Deref, DerefMut)]
-pub struct StarRng(ChaCha8Rng);
+struct RngResource(ChaCha8Rng);
 
-impl Default for StarRng {
+impl Default for RngResource {
     fn default() -> Self {
         Self(ChaCha8Rng::seed_from_u64(19878367467712))
     }
@@ -52,11 +50,13 @@ fn scene_setup_system(mut commands: Commands) {
     commands.spawn((PointLight::default(),));
 }
 
-fn star_spawn_system(
+fn word_cube_spawn_system(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
-    mut rng: ResMut<StarRng>,
+    mut word_bag: ResMut<WordBag>,
+    word_cubes: Query<&WordCube>,
+    mut rng: Local<RngResource>,
     camera: Single<(&Camera, &GlobalTransform), With<RatatuiCamera>>,
 ) {
     let (camera, camera_transform) = camera.into_inner();
@@ -65,27 +65,35 @@ fn star_spawn_system(
         return;
     };
 
-    let color = Color::hsl(((rng.next_u32() % 180 + 165) % 360) as f32, 0.3, 0.4);
+    let word_cube = word_bag.pick(&mut rng.0).clone();
+
+    if word_cubes
+        .iter()
+        .any(|spawned_cube| word_cube.word == spawned_cube.word)
+    {
+        word_bag.shuffle_new_draft(&mut rng.0);
+        return;
+    }
 
     commands.spawn((
-        Star::new("egg", color),
-        Mesh3d(meshes.add(Cuboid::from_length(STAR_LENGTH))),
-        MeshMaterial3d(materials.add(color)),
+        Mesh3d(meshes.add(Cuboid::from_length(WORD_CUBE_LENGTH))),
+        MeshMaterial3d(materials.add(word_cube.color)),
         Transform::from_translation(spawn_position),
+        word_cube,
     ));
 }
 
-fn star_move_system(time: Res<Time>, mut stars: Query<&mut Transform, With<Star>>) {
+fn word_cube_move_system(time: Res<Time>, mut stars: Query<&mut Transform, With<WordCube>>) {
     for mut star in &mut stars {
-        star.translation.y -= time.delta_secs() * 0.5;
+        star.translation.y -= time.delta_secs() * 0.35;
         star.rotate_y(time.delta_secs());
         star.rotate_x(time.delta_secs() * 0.4);
     }
 }
 
-fn star_despawn_system(
+fn word_cube_despawn_system(
     mut commands: Commands,
-    mut stars: Query<(Entity, &mut Transform), With<Star>>,
+    mut stars: Query<(Entity, &mut Transform), With<WordCube>>,
     camera: Single<(&Camera, &GlobalTransform), With<RatatuiCamera>>,
 ) {
     let (camera, camera_transform) = camera.into_inner();
@@ -105,7 +113,7 @@ fn get_spawn_position(
     camera_transform: &GlobalTransform,
     near_depth: f32,
     far_depth: f32,
-    rng: &mut StarRng,
+    rng: &mut RngResource,
 ) -> Option<Vec3> {
     let viewport_size = camera.logical_viewport_size()?;
 
@@ -128,7 +136,7 @@ fn get_spawn_position(
     let top_right_at_z = top_right.get_point(top_right_distance);
 
     let x = (top_left_at_z.x..top_right_at_z.x).sample_single(&mut rng.0);
-    let y = top_left_at_z.y + STAR_LENGTH;
+    let y = top_left_at_z.y + WORD_CUBE_LENGTH;
 
     Some(Vec3::new(x, y, -z))
 }

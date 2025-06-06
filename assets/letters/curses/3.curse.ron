@@ -1,5 +1,5 @@
-Curse(
-    message: "Missed an important phone call",
+TestimonialStub(
+    message: "missed an important phone call",
     effect: Income(-1),
     targets: [3],
 )
