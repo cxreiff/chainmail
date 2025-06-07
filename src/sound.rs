@@ -10,31 +10,49 @@ pub(super) fn plugin(app: &mut App) {
 
 #[derive(AssetCollection, Resource)]
 pub struct SoundEffectAssets {
-    #[asset(key = "sounds.slam", collection(typed))]
-    pub slam: Vec<Handle<AudioSource>>,
-    #[asset(key = "sounds.tap", collection(typed))]
-    pub tap: Vec<Handle<AudioSource>>,
-    #[asset(key = "sounds.bless_header")]
-    pub bless_header: Handle<AudioSource>,
-    #[asset(key = "sounds.bless", collection(typed))]
-    pub bless: Vec<Handle<AudioSource>>,
-    #[asset(key = "sounds.curse_header")]
-    pub curse_header: Handle<AudioSource>,
-    #[asset(key = "sounds.curse", collection(typed))]
-    pub _curse: Vec<Handle<AudioSource>>,
+    #[asset(key = "sounds.window")]
+    pub window: Handle<AudioSource>,
+    #[asset(key = "sounds.text_group")]
+    pub text_group: Handle<AudioSource>,
+    #[asset(key = "sounds.text_character", collection(typed))]
+    pub text_character: Vec<Handle<AudioSource>>,
+    #[asset(key = "sounds.text_header_bless")]
+    pub text_header_bless: Handle<AudioSource>,
+    #[asset(key = "sounds.text_bless")]
+    pub text_bless: Handle<AudioSource>,
+    #[asset(key = "sounds.text_header_curse")]
+    pub text_header_curse: Handle<AudioSource>,
+    #[asset(key = "sounds.text_curse")]
+    pub text_curse: Handle<AudioSource>,
     #[asset(key = "sounds.start")]
     pub start: Handle<AudioSource>,
+    #[asset(key = "sounds.letter_clear")]
+    pub letter_clear: Handle<AudioSource>,
+    #[asset(key = "sounds.letter_fail")]
+    pub letter_fail: Handle<AudioSource>,
+    #[asset(key = "sounds.guess_bless")]
+    pub guess_bless: Handle<AudioSource>,
+    #[asset(key = "sounds.guess_decoy")]
+    pub guess_decoy: Handle<AudioSource>,
+    #[asset(key = "sounds.guess_curse")]
+    pub guess_curse: Handle<AudioSource>,
 }
 
 #[derive(Event)]
 pub enum SoundEffect {
-    Slam,
-    Tap,
-    BlessHeader,
-    Bless,
-    CurseHeader,
-    Curse,
+    Window,
+    TextGroup,
+    TextCharacter,
+    TextHeaderBless,
+    TextBless,
+    TextHeaderCurse,
+    TextCurse,
     Start,
+    LetterClear,
+    LetterFail,
+    GuessBless,
+    GuessDecoy,
+    GuessCurse,
 }
 
 fn sound_effects_observer(
@@ -44,14 +62,19 @@ fn sound_effects_observer(
     mut rng: Local<RngResource>,
 ) {
     let sound = match trigger.event() {
-        SoundEffect::Slam => handles.slam.choose(&mut rng.0).unwrap(),
-        SoundEffect::Tap => handles.tap.choose(&mut rng.0).unwrap(),
-        SoundEffect::BlessHeader => &handles.bless_header,
-        SoundEffect::Bless => handles.bless.choose(&mut rng.0).unwrap(),
-        SoundEffect::CurseHeader => &handles.curse_header,
-        // TODO: switch back.
-        SoundEffect::Curse => handles.bless.choose(&mut rng.0).unwrap(),
+        SoundEffect::Window => &handles.window,
+        SoundEffect::TextGroup => &handles.text_group,
+        SoundEffect::TextCharacter => handles.text_character.choose(&mut rng.0).unwrap(),
+        SoundEffect::TextHeaderBless => &handles.text_header_bless,
+        SoundEffect::TextBless => &handles.text_bless,
+        SoundEffect::TextHeaderCurse => &handles.text_header_curse,
+        SoundEffect::TextCurse => &handles.text_curse,
         SoundEffect::Start => &handles.start,
+        SoundEffect::LetterClear => &handles.letter_clear,
+        SoundEffect::LetterFail => &handles.letter_fail,
+        SoundEffect::GuessBless => &handles.guess_bless,
+        SoundEffect::GuessDecoy => &handles.guess_decoy,
+        SoundEffect::GuessCurse => &handles.guess_curse,
     };
 
     commands.spawn((AudioPlayer(sound.clone()), PlaybackSettings::DESPAWN));

@@ -55,33 +55,51 @@
             "letters/names/25.name.ron",
         ],
     ),
-    "sounds.slam": Files(
-        paths: [
-            "sounds/slam1.ogg",
-        ],
+    "sounds.window": File(
+        path: "sounds/notification1.ogg",
     ),
-    "sounds.tap": Files(
+    "sounds.text_group": File(
+        path: "sounds/text2.ogg",
+    ),
+    "sounds.text_character": Files(
         paths: [
             "sounds/tap1.ogg",
+            "sounds/tap2.ogg",
+            "sounds/tap3.ogg",
+            "sounds/tap4.ogg",
+            "sounds/tap5.ogg",
+            "sounds/tap6.ogg",
+            "sounds/tap7.ogg",
         ],
     ),
-    "sounds.bless_header": File(
+    "sounds.text_header_bless": File(
         path: "sounds/bless_header.ogg",
     ),
-    "sounds.bless": Files(
-        paths: [
-            "sounds/bless1.ogg",
-        ],
+    "sounds.text_bless": File(
+        path: "sounds/bless1.ogg",
     ),
-    "sounds.curse_header": File(
+    "sounds.text_header_curse": File(
         path: "sounds/curse_header.ogg",
     ),
-    "sounds.curse": Files(
-        paths: [
-            "sounds/curse1.ogg",
-        ],
+    "sounds.text_curse": File(
+        path: "sounds/curse1.ogg",
     ),
     "sounds.start": File(
         path: "sounds/start.ogg",
+    ),
+    "sounds.letter_clear": File(
+        path: "sounds/ding.ogg",
+    ),
+    "sounds.letter_fail": File(
+        path: "sounds/curse1.ogg",
+    ),
+    "sounds.guess_bless": File(
+        path: "sounds/notification3.ogg",
+    ),
+    "sounds.guess_decoy": File(
+        path: "sounds/click1.ogg",
+    ),
+    "sounds.guess_curse": File(
+        path: "sounds/curse1.ogg",
     ),
 })

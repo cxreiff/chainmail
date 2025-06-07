@@ -379,35 +379,35 @@ fn trigger_reveal_sound_effects(
     next: &LetterWidgetRevealed,
 ) {
     if previous.title_revealed != next.title_revealed {
-        commands.trigger(SoundEffect::Slam);
+        commands.trigger(SoundEffect::TextGroup);
     }
 
     if previous.body_chars_revealed != next.body_chars_revealed {
-        commands.trigger(SoundEffect::Tap);
+        commands.trigger(SoundEffect::TextCharacter);
     }
 
     if previous.blessings_header_revealed != next.blessings_header_revealed {
-        commands.trigger(SoundEffect::BlessHeader);
+        commands.trigger(SoundEffect::TextHeaderBless);
     }
 
     if previous.blessings_revealed != next.blessings_revealed {
-        commands.trigger(SoundEffect::Bless);
+        commands.trigger(SoundEffect::TextBless);
     }
 
     if previous.curses_header_revealed != next.curses_header_revealed {
-        commands.trigger(SoundEffect::CurseHeader);
+        commands.trigger(SoundEffect::TextHeaderCurse);
     }
 
     if previous.curses_revealed != next.curses_revealed {
-        commands.trigger(SoundEffect::Curse);
+        commands.trigger(SoundEffect::TextCurse);
     }
 
     if previous.signoff_chars_revealed != next.signoff_chars_revealed {
-        commands.trigger(SoundEffect::Tap);
+        commands.trigger(SoundEffect::TextCharacter);
     }
 
     if previous.footer_revealed != next.footer_revealed {
-        commands.trigger(SoundEffect::Slam);
+        commands.trigger(SoundEffect::TextGroup);
     }
 
     if previous.finished != next.finished {

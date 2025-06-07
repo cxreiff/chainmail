@@ -6,6 +6,7 @@ use crate::{
     letters::{CurrentLetter, Effect, WordBag},
     rng::RngResource,
     scene::spawning::WordCube,
+    sound::SoundEffect,
     states::{LetterCleared, Statistics},
 };
 
@@ -30,7 +31,11 @@ fn submitted_word_observer(
     mut rng: Local<RngResource>,
 ) {
     for (entity, word_cube, transform) in &word_cubes {
+        let mut decoy = false;
+
         if word_cube.word == prompt.text {
+            decoy = true;
+
             if let Some(index) = word_bag
                 .full_collection
                 .iter()
@@ -46,20 +51,28 @@ fn submitted_word_observer(
                 color: color_for_character(&word_cube.despawn_character),
                 character: word_cube.despawn_character,
             });
+        }
 
-            for blessing in &mut current_letter.blessings {
-                if blessing.target_word == prompt.text {
-                    blessing.collected = true;
-                    commands.trigger(ActivateEffect(blessing.effect.clone()));
-                }
+        for blessing in &mut current_letter.blessings {
+            if blessing.target_word == prompt.text {
+                blessing.collected = true;
+                decoy = false;
+                commands.trigger(SoundEffect::GuessBless);
+                commands.trigger(ActivateEffect(blessing.effect.clone()));
             }
+        }
 
-            for curse in &mut current_letter.curses {
-                if curse.target_word == prompt.text {
-                    curse.collected = true;
-                    commands.trigger(ActivateEffect(curse.effect.clone()));
-                }
+        for curse in &mut current_letter.curses {
+            if curse.target_word == prompt.text {
+                curse.collected = true;
+                decoy = false;
+                commands.trigger(SoundEffect::GuessCurse);
+                commands.trigger(ActivateEffect(curse.effect.clone()));
             }
+        }
+
+        if decoy {
+            commands.trigger(SoundEffect::GuessDecoy);
         }
     }
 

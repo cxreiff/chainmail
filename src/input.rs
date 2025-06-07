@@ -14,6 +14,7 @@ use bevy_ratatui::event::MouseEvent as RatatuiMouseEvent;
 
 use crate::interface::draw::Flags;
 use crate::interface::widgets::letter::LetterWidgetState;
+use crate::sound::SoundEffect;
 use crate::word_checks::SubmittedWord;
 
 pub(super) fn plugin(app: &mut App) {
@@ -144,6 +145,7 @@ fn handle_mouse_input_system(
 
 #[cfg(not(feature = "windowed"))]
 fn handle_prompt_input_system(
+    mut commands: Commands,
     mut keyboard_input: EventReader<RatatuiKeyEvent>,
     mut prompt_state: ResMut<Prompt>,
 ) {
@@ -154,9 +156,11 @@ fn handle_prompt_input_system(
         if event.kind == KeyEventKind::Press {
             if let KeyCode::Char(c) = event.code {
                 if c.is_alphabetic() {
+                    commands.trigger(SoundEffect::TextCharacter);
                     prompt_state.text.push(c.to_ascii_lowercase());
                 }
             } else if let KeyCode::Backspace = event.code {
+                commands.trigger(SoundEffect::TextCharacter);
                 prompt_state.text.pop();
             }
         }
@@ -165,6 +169,7 @@ fn handle_prompt_input_system(
 
 #[cfg(feature = "windowed")]
 fn handle_prompt_input_system(
+    mut commands: Commands,
     mut keyboard_events: EventReader<KeyboardInput>,
     mut prompt_state: ResMut<Prompt>,
 ) {
@@ -173,10 +178,12 @@ fn handle_prompt_input_system(
             if let Some(text) = &event.text {
                 for c in text.chars() {
                     if c.is_alphabetic() {
+                        commands.trigger(SoundEffect::TextCharacter);
                         prompt_state.text.push(c.to_ascii_lowercase());
                     }
                 }
             } else if event.key_code == KeyCode::Backspace {
+                commands.trigger(SoundEffect::TextCharacter);
                 prompt_state.text.pop();
             }
         }

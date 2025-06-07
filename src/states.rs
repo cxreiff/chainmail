@@ -8,6 +8,7 @@ use crate::{
     letters::{CurrentLetter, Flavor, LetterAssets, LetterBag, Name, TestimonialStub, WordBag},
     rng::RngResource,
     scene::spawning::WordCube,
+    sound::SoundEffect,
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -97,6 +98,7 @@ pub fn generate_current_letter_system(
         curse_amount,
     );
 
+    commands.trigger(SoundEffect::Window);
     commands.insert_resource(WordBag::new(
         &letter.blessings,
         &letter.curses,
@@ -113,10 +115,12 @@ pub fn letter_cleared_observer(
     mut stats: ResMut<Statistics>,
 ) {
     stats.money += stats.income;
+    commands.trigger(SoundEffect::LetterClear);
     commands.set_state(GameStates::Resetting);
 }
 
 pub fn letter_failed_observer(_trigger: Trigger<LetterFailed>, mut commands: Commands) {
+    commands.trigger(SoundEffect::LetterFail);
     commands.set_state(GameStates::Resetting);
 }
 
