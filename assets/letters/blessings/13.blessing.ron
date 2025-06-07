@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "cured {pronoun_possessive} illness through unexpected treatment",
+    effect: Score(250),
+    targets: [2],
+)

@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "lantern",
+    effect: Noop,
+    targets: [0],
+)

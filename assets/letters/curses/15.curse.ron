@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "found termites throughout {pronoun_possessive} entire house",
+    effect: Income(-3),
+    targets: [1],
+)

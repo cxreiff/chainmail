@@ -36,13 +36,13 @@ pub const WORD_CUBE_LENGTH: f32 = 0.7;
 pub const TIME_LIMIT_RANGE: RangeInclusive<usize> = 40..=60;
 
 // Range of possible blessing quantities per letter.
-pub const BLESSING_RANGE: RangeInclusive<usize> = 3..=5;
+pub const BLESSING_RANGE: RangeInclusive<usize> = 4..=6;
 
 // Range of possible curse quantities per letter.
 pub const CURSE_RANGE: RangeInclusive<usize> = 3..=5;
 
 // Range of possible decoy quantites per letter.
-pub const DECOY_RANGE: RangeInclusive<usize> = 2..=3;
+pub const DECOY_RANGE: RangeInclusive<usize> = 8..=12;
 
 // Amount of confetti to spawn for each guessed word.
 pub const CONFETTI_AMOUNT: usize = 32;

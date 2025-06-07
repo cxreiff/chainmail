@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "got caught in a sudden downpour without umbrella",
+    effect: Score(-50),
+    targets: [6],
+)

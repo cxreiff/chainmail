@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "helped a stranger who turned out to be wealthy",
+    effect: Money(250),
+    targets: [2],
+)

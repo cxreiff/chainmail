@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "spilled coffee on {pronoun_possessive} laptop yesterday",
+    effect: Score(-150),
+    targets: [1],
+)

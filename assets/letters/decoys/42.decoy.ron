@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "magnet",
+    effect: Noop,
+    targets: [0],
+)

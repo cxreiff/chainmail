@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "had {pronoun_possessive} business idea become wildly successful",
+    effect: Income(20),
+    targets: [5],
+)

@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "had {pronoun_possessive} bicycle stolen from the garage",
+    effect: Score(-80),
+    targets: [2],
+)

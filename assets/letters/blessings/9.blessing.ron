@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "got accepted into {pronoun_possessive} dream university program",
+    effect: Score(200),
+    targets: [5],
+)

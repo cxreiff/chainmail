@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "had {pronoun_possessive} luggage lost by the airline",
+    effect: Score(-100),
+    targets: [2],
+)

@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "phoenix",
+    effect: Noop,
+    targets: [0],
+)

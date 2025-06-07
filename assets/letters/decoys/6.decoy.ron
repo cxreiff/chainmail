@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "volcano",
+    effect: Noop,
+    targets: [0],
+)

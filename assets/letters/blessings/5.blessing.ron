@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "found {pronoun_possessive} dream apartment after searching",
+    effect: Score(150),
+    targets: [2],
+)

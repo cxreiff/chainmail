@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "reunited with {pronoun_possessive} childhood friend through coincidence",
+    effect: Score(75),
+    targets: [6],
+)

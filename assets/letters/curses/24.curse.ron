@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "locked {pronoun_object}self out of the apartment",
+    effect: Score(-60),
+    targets: [5],
+)

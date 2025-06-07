@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "horizon",
+    effect: Noop,
+    targets: [0],
+)

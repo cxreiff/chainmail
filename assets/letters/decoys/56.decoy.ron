@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "fireworks",
+    effect: Noop,
+    targets: [0],
+)

@@ -1,0 +1,6 @@
+Flavor(
+    title: "PROSPERITY CHAIN",
+    body: "Congratulations! You've been selected for the Prosperity Chain. This exclusive message must reach {recipients} ambitious individuals within {time_limit} seconds. Each link in the chain strengthens the flow of abundance.",
+    signoff: "Success is meant to be shared! Forward to {recipients} driven people immediately. Breaking the protocol stops the flow - keeping it brings opportunities beyond measure!",
+    footer: "The Prosperity Chain was established in 1981 by successful entrepreneurs worldwide.",
+)

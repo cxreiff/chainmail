@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "got food poisoning at {pronoun_possessive} birthday dinner",
+    effect: Score(-125),
+    targets: [1],
+)

@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "butterfly",
+    effect: Noop,
+    targets: [0],
+)

@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "discovered rare coins in {pronoun_possessive} backyard",
+    effect: Money(350),
+    targets: [1],
+)

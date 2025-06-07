@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "lost {pronoun_possessive} voice before the presentation",
+    effect: Score(-150),
+    targets: [4],
+)

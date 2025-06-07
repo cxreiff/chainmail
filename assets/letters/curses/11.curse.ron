@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "watched {pronoun_possessive} phone fall into the toilet",
+    effect: Score(-175),
+    targets: [5],
+)

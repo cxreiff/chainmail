@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "constellation",
+    effect: Noop,
+    targets: [0],
+)

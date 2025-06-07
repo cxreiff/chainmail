@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "revolution",
+    effect: Noop,
+    targets: [0],
+)

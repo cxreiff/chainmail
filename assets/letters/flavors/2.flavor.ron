@@ -1,0 +1,6 @@
+Flavor(
+    title: "THE FRIENDSHIP CIRCLE",
+    body: "You have been chosen to join the sacred friendship circle! This message carries the power of connection and joy. Share this letter with exactly {recipients} of your closest friends within {time_limit} seconds to keep the circle unbroken.",
+    signoff: "Remember: True friendship multiplies when shared! Send this to {recipients} special people in your life. Those who maintain the circle will find their bonds grow stronger!",
+    footer: "The Friendship Circle began in 1967 and has connected millions of hearts worldwide.",
+)

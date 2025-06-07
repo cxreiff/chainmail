@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "received an award for {pronoun_possessive} community service",
+    effect: Score(175),
+    targets: [5],
+)

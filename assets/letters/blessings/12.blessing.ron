@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "received a scholarship {pronoun_subject} didn't apply for",
+    effect: Money(100),
+    targets: [2],
+)

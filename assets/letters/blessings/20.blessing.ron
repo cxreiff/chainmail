@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "inherited property from a distant relative",
+    effect: Money(600),
+    targets: [1],
+)

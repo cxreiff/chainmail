@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "discovered mice in {pronoun_possessive} kitchen pantry yesterday",
+    effect: Score(-125),
+    targets: [1],
+)

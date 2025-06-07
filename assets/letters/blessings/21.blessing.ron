@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "became famous for {pronoun_possessive} viral video",
+    effect: Income(12),
+    targets: [5],
+)
