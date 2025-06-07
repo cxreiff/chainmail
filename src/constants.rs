@@ -15,7 +15,7 @@ pub const _PLASTIC_BLACK_BACKGROUND_COLOR: Color = Color::from_u32(0x00000000);
 pub const MAC_GREEN_COLOR: Color = Color::from_u32(0x0075BD21);
 pub const MAC_YELLOW_COLOR: Color = Color::from_u32(0x00FFC728);
 pub const _MAC_ORANGE_COLOR: Color = Color::from_u32(0x00FF661C);
-pub const MAC_RED_COLOR: Color = Color::from_u32(0x00CF0F2B);
+pub const MAC_RED_COLOR: Color = Color::from_u32(0x00DF3F4B);
 pub const MAC_PURPLE_COLOR: Color = Color::from_u32(0x00CAAEDC);
 pub const MAC_CYAN_COLOR: Color = Color::from_u32(0x00A0DADE);
 
@@ -33,7 +33,7 @@ pub const LETTER_PADDING: u16 = 1;
 pub const WORD_CUBE_LENGTH: f32 = 0.5;
 
 // Range of possible recipient quotas per letter.
-pub const EXTRA_RECIPIENTS_RANGE: RangeInclusive<usize> = 2..=4;
+pub const _EXTRA_RECIPIENTS_RANGE: RangeInclusive<usize> = 2..=4;
 
 // Range of possible time limits (in seconds) per letter.
 pub const TIME_LIMIT_RANGE: RangeInclusive<usize> = 30..=40;

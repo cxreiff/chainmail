@@ -2,7 +2,7 @@ use bevy::{
     diagnostic::{DiagnosticsStore, EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin},
     prelude::*,
 };
-use ratatui::widgets::{Padding, Widget};
+use ratatui::widgets::{Borders, Padding, Widget};
 use ratatui::{
     Frame,
     layout::{Constraint, Direction, Layout},
@@ -14,10 +14,10 @@ use tui_logger::TuiLoggerWidget;
 
 use crate::{
     constants::{
-        MAC_PURPLE_MUTED_COLOR, MAC_RED_MUTED_COLOR, PLASTIC_DARK_BACKGROUND_COLOR,
-        PLASTIC_LIGHT_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR,
+        MAC_GREEN_MUTED_COLOR, MAC_PURPLE_MUTED_COLOR, MAC_RED_MUTED_COLOR,
+        PLASTIC_DARK_BACKGROUND_COLOR, PLASTIC_LIGHT_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR,
     },
-    score::Statistics,
+    states::Statistics,
 };
 
 use super::{draw::Flags, widgets::statistics::StatisticsWidget};
@@ -39,14 +39,15 @@ pub fn layout_frame(
         .bg(PLASTIC_LIGHT_BACKGROUND_COLOR)
         .fg(PLASTIC_PRIMARY_COLOR);
     let undertab_block = Block::bordered()
-        .border_type(BorderType::Thick)
+        .borders(Borders::LEFT | Borders::RIGHT | Borders::BOTTOM)
+        .border_type(BorderType::QuadrantInside)
         .padding(Padding::horizontal(2))
         .bg(PLASTIC_DARK_BACKGROUND_COLOR)
         .fg(PLASTIC_PRIMARY_COLOR);
 
     let [main_area, bottom_area] = *Layout::new(
         Direction::Vertical,
-        [Constraint::Fill(1), Constraint::Length(3)],
+        [Constraint::Fill(1), Constraint::Length(2)],
     )
     .split(frame.area()) else {
         unreachable!()
@@ -98,7 +99,13 @@ pub fn layout_frame(
         bottom_area[0],
     );
     frame.render_widget(name_line, undertab_block.inner(bottom_area[0]));
-    frame.render_widget(undertab_block.clone(), bottom_area[1]);
+    frame.render_widget(
+        undertab_block
+            .clone()
+            .border_style(Style::default().bg(PLASTIC_DARK_BACKGROUND_COLOR))
+            .bg(MAC_GREEN_MUTED_COLOR),
+        bottom_area[1],
+    );
 
     if flags.debug {
         frame.render_widget(status_line, undertab_block.inner(bottom_area[1]));

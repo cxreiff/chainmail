@@ -10,8 +10,8 @@ mod input;
 mod interface;
 mod letters;
 mod loading;
+mod rng;
 mod scene;
-mod score;
 mod sound;
 mod states;
 #[cfg(not(feature = "windowed"))]
@@ -51,7 +51,6 @@ impl Plugin for AppPlugin {
             loading::plugin,
             sound::plugin,
             scene::plugin,
-            score::plugin,
             states::plugin,
             word_checks::plugin,
         ));

@@ -15,8 +15,7 @@ use crate::{
     constants::{MAC_PURPLE_COLOR, MAC_YELLOW_COLOR},
     letters::CurrentLetter,
     scene::spawning::WordCube,
-    score::Statistics,
-    states::GameStates,
+    states::{GameStates, Statistics},
 };
 
 use super::{
@@ -242,7 +241,24 @@ fn draw_system(
 pub struct ResetEffect(pub Option<Effect>);
 
 fn activate_reset_scene_effect(mut reset_effect: NonSendMut<ResetEffect>) {
-    reset_effect.0 = Some(Effect::new(fx::dissolve((1000, Interpolation::Linear))));
+    #[cfg(not(feature = "windowed"))]
+    {
+        reset_effect.0 = Some(Effect::new(fx::dissolve((1000, Interpolation::Linear))));
+    }
+
+    #[cfg(feature = "windowed")]
+    {
+        use crate::constants::PLASTIC_LIGHT_BACKGROUND_COLOR;
+        use tachyonfx::Motion;
+
+        reset_effect.0 = Some(Effect::new(fx::sweep_out(
+            Motion::UpToDown,
+            10,
+            2,
+            PLASTIC_LIGHT_BACKGROUND_COLOR,
+            (1000, Interpolation::Linear),
+        )));
+    }
 }
 
 fn deactivate_reset_scene_effect(mut reset_effect: NonSendMut<ResetEffect>) {

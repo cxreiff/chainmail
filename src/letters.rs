@@ -2,14 +2,11 @@ use bevy::prelude::*;
 use bevy_asset_loader::asset_collection::AssetCollection;
 use bevy_common_assets::ron::RonAssetPlugin;
 use bevy_shuffle_bag::ShuffleBag;
-use rand::{Rng, SeedableRng, seq::IteratorRandom};
-use rand_chacha::ChaCha8Rng;
+use rand::{Rng, seq::IteratorRandom};
 use serde::Deserialize;
 
 use crate::{
-    constants::{EXTRA_RECIPIENTS_RANGE, TIME_LIMIT_RANGE},
-    scene::spawning::WordCube,
-    states::GameStates,
+    constants::TIME_LIMIT_RANGE, rng::RngResource, scene::spawning::WordCube, states::GameStates,
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -43,6 +40,17 @@ pub enum Effect {
     Money(i32),
     Income(i32),
     Noop,
+}
+
+impl std::fmt::Display for Effect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Effect::Score(score) => write!(f, "{score} score"),
+            Effect::Money(money) => write!(f, "{money} money"),
+            Effect::Income(income) => write!(f, "{income} income"),
+            Effect::Noop => write!(f, ""),
+        }
+    }
 }
 
 #[derive(Debug, Deserialize, Asset, TypePath, Clone)]
@@ -153,10 +161,7 @@ impl LetterBag {
             .expect("flavor asset must be present")
             .to_owned();
 
-        let recipients = blessing_amount
-            + EXTRA_RECIPIENTS_RANGE
-                .choose(rng)
-                .expect("RECIPIENTS_RANGE must be a valid range");
+        let recipients = blessing_amount;
 
         let time_limit = TIME_LIMIT_RANGE
             .choose(rng)
@@ -291,15 +296,6 @@ impl WordBag {
         .expect("there must be at least one testimonial");
 
         Self(bag)
-    }
-}
-
-#[derive(Resource, Deref, DerefMut)]
-struct RngResource(ChaCha8Rng);
-
-impl Default for RngResource {
-    fn default() -> Self {
-        Self(ChaCha8Rng::from_entropy())
     }
 }
 

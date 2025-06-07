@@ -1,21 +1,18 @@
 use bevy::prelude::*;
-use rand::{
-    SeedableRng,
-    seq::{IteratorRandom, SliceRandom},
-};
-use rand_chacha::ChaCha8Rng;
+use rand::seq::{IteratorRandom, SliceRandom};
 use tachyonfx::Shader;
 
 use crate::{
     constants::{BLESSING_RANGE, CURSE_RANGE, DECOY_RANGE},
     interface::widgets::{letter::LetterWidgetState, prompt::Prompt},
     letters::{CurrentLetter, Flavor, LetterAssets, LetterBag, Name, TestimonialStub, WordBag},
+    rng::RngResource,
     scene::spawning::WordCube,
-    word_checks::WordGuesses,
 };
 
 pub(super) fn plugin(app: &mut App) {
     app.init_state::<GameStates>()
+        .init_resource::<Statistics>()
         .add_observer(letter_cleared_observer)
         .add_observer(letter_failed_observer)
         .add_systems(
@@ -46,13 +43,11 @@ pub struct LetterCleared;
 #[derive(Event, Debug)]
 pub struct LetterFailed;
 
-#[derive(Resource, Deref, DerefMut)]
-pub struct Rng(ChaCha8Rng);
-
-impl Default for Rng {
-    fn default() -> Self {
-        Self(ChaCha8Rng::from_entropy())
-    }
+#[derive(Resource, Default, Debug)]
+pub struct Statistics {
+    pub score: i32,
+    pub money: i32,
+    pub income: i32,
 }
 
 pub fn generate_current_letter_system(
@@ -63,7 +58,7 @@ pub fn generate_current_letter_system(
     names: Res<Assets<Name>>,
     flavors: Res<Assets<Flavor>>,
     mut letter_widget_state: NonSendMut<LetterWidgetState>,
-    mut rng: Local<Rng>,
+    mut rng: Local<RngResource>,
 ) {
     let blessing_amount = BLESSING_RANGE
         .choose(&mut rng.0)
@@ -102,7 +97,6 @@ pub fn generate_current_letter_system(
         curse_amount,
     );
 
-    commands.insert_resource(WordGuesses(letter.recipients));
     commands.insert_resource(WordBag::new(
         &letter.blessings,
         &letter.curses,
@@ -113,7 +107,12 @@ pub fn generate_current_letter_system(
     *letter_widget_state = LetterWidgetState::default();
 }
 
-pub fn letter_cleared_observer(_trigger: Trigger<LetterCleared>, mut commands: Commands) {
+pub fn letter_cleared_observer(
+    _trigger: Trigger<LetterCleared>,
+    mut commands: Commands,
+    mut stats: ResMut<Statistics>,
+) {
+    stats.money += stats.income;
     commands.set_state(GameStates::Resetting);
 }
 

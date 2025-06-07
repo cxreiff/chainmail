@@ -1,8 +1,7 @@
 use std::f32::consts::PI;
 
 use bevy::prelude::*;
-use rand::{RngCore, SeedableRng};
-use rand_chacha::ChaCha8Rng;
+use rand::RngCore;
 use ratatui::{
     buffer::Buffer,
     layout::{Position, Rect},
@@ -10,7 +9,7 @@ use ratatui::{
     widgets::WidgetRef,
 };
 
-use crate::{constants::CONFETTI_AMOUNT, states::GameStates};
+use crate::{constants::CONFETTI_AMOUNT, rng::RngResource, states::GameStates};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_observer(confetti_spawn_observer).add_systems(
@@ -62,15 +61,6 @@ pub struct ConfettiSpawn {
     pub position: Vec3,
     pub character: char,
     pub color: ratatui::style::Color,
-}
-
-#[derive(Resource, Deref, DerefMut)]
-struct RngResource(ChaCha8Rng);
-
-impl Default for RngResource {
-    fn default() -> Self {
-        Self(ChaCha8Rng::from_entropy())
-    }
 }
 
 fn confetti_spawn_observer(

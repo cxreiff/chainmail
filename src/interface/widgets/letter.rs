@@ -16,9 +16,10 @@ use tui_scrollview::{ScrollView, ScrollViewState, ScrollbarVisibility};
 
 use crate::constants::{
     BLESSING_REVEAL_TIME, BODY_REVEAL_TIME, CURSE_REVEAL_TIME, CUSTOM_BORDERS, FINISHED_TIME,
-    FOOTER_REVEAL_TIME, HEADER_REVEAL_TIME, LETTER_PADDING, MAC_GREEN_COLOR, MAC_RED_COLOR,
-    PLASTIC_LIGHT_BACKGROUND_COLOR, PLASTIC_MEDIUM_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR,
-    PLASTIC_SECONDARY_COLOR, REVEAL_TIME_MARGIN, SIGNOFF_REVEAL_TIME, TITLE_REVEAL_TIME,
+    FOOTER_REVEAL_TIME, HEADER_REVEAL_TIME, LETTER_PADDING, MAC_GREEN_COLOR, MAC_GREEN_MUTED_COLOR,
+    MAC_RED_COLOR, MAC_RED_MUTED_COLOR, PLASTIC_LIGHT_BACKGROUND_COLOR,
+    PLASTIC_MEDIUM_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR, PLASTIC_SECONDARY_COLOR,
+    REVEAL_TIME_MARGIN, SIGNOFF_REVEAL_TIME, TITLE_REVEAL_TIME,
 };
 use crate::interface::utilities::interpolate_and_truncate;
 use crate::letters::CurrentLetter;
@@ -200,15 +201,25 @@ impl StatefulWidget for &LetterWidget<'_> {
             let blessing = &self.blessings[i];
 
             let message = if blessing.collected {
-                Span::from(blessing.message.replace("_*", &blessing.target_word))
-                    .fg(MAC_GREEN_COLOR)
+                Span::from(blessing.message.replace(
+                    &"_".repeat(blessing.target_word.len()),
+                    &blessing.target_word,
+                ))
+                .fg(MAC_GREEN_MUTED_COLOR)
             } else {
                 Span::from(&blessing.message)
             };
 
+            let suffix = if blessing.collected {
+                Span::from(" ".to_string() + &blessing.effect.to_string()).fg(MAC_GREEN_COLOR)
+            } else {
+                Span::from("")
+            };
+
             lines.push(Line::from(vec![
-                Span::from("+ ").fg(MAC_GREEN_COLOR),
+                Span::from("+ ").fg(MAC_GREEN_COLOR).bold(),
                 message,
+                suffix,
             ]));
         }
 
@@ -223,14 +234,26 @@ impl StatefulWidget for &LetterWidget<'_> {
             let curse = &self.curses[i];
 
             let message = if curse.collected {
-                Span::from(curse.message.replace("_*", &curse.target_word)).fg(MAC_RED_COLOR)
+                Span::from(
+                    curse
+                        .message
+                        .replace(&"_".repeat(curse.target_word.len()), &curse.target_word),
+                )
+                .fg(MAC_RED_MUTED_COLOR)
             } else {
                 Span::from(&curse.message)
             };
 
+            let suffix = if curse.collected {
+                Span::from(" ".to_string() + &curse.effect.to_string()).fg(MAC_RED_COLOR)
+            } else {
+                Span::from("")
+            };
+
             lines.push(Line::from(vec![
-                Span::from("- ").fg(MAC_RED_COLOR),
+                Span::from("- ").fg(MAC_RED_COLOR).bold(),
                 message,
+                suffix,
             ]));
         }
 

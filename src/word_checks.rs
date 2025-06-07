@@ -4,9 +4,9 @@ use crate::{
     constants::{MAC_GREEN_COLOR, MAC_PURPLE_COLOR, MAC_RED_COLOR, MAC_YELLOW_COLOR},
     interface::widgets::{confetti::ConfettiSpawn, prompt::Prompt},
     letters::{CurrentLetter, Effect, WordBag},
+    rng::RngResource,
     scene::spawning::WordCube,
-    score::Statistics,
-    states::{LetterCleared, LetterFailed},
+    states::{LetterCleared, Statistics},
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -20,9 +20,6 @@ pub struct SubmittedWord;
 #[derive(Event)]
 pub struct ActivateEffect(Effect);
 
-#[derive(Resource, Deref, DerefMut)]
-pub struct WordGuesses(pub usize);
-
 fn submitted_word_observer(
     _trigger: Trigger<SubmittedWord>,
     mut commands: Commands,
@@ -30,7 +27,7 @@ fn submitted_word_observer(
     mut current_letter: ResMut<CurrentLetter>,
     word_cubes: Query<(Entity, &WordCube, &Transform)>,
     mut word_bag: ResMut<WordBag>,
-    mut word_guesses: ResMut<WordGuesses>,
+    mut rng: Local<RngResource>,
 ) {
     for (entity, word_cube, transform) in &word_cubes {
         if word_cube.word == prompt.text {
@@ -41,6 +38,7 @@ fn submitted_word_observer(
             {
                 word_bag.full_collection.remove(index);
             };
+            word_bag.reset(&mut rng.0);
 
             commands.entity(entity).despawn();
             commands.trigger(ConfettiSpawn {
@@ -67,18 +65,12 @@ fn submitted_word_observer(
 
     prompt.text = "".into();
 
-    **word_guesses -= 1;
-
     if current_letter
         .blessings
         .iter()
         .all(|blessing| blessing.collected)
     {
         commands.trigger(LetterCleared);
-    }
-
-    if **word_guesses == 0 {
-        commands.trigger(LetterFailed);
     }
 }
 

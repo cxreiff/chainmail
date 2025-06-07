@@ -1,7 +1,8 @@
 use bevy::prelude::*;
 use bevy_asset_loader::asset_collection::AssetCollection;
-use rand::{SeedableRng, seq::SliceRandom};
-use rand_chacha::ChaCha8Rng;
+use rand::seq::SliceRandom;
+
+use crate::rng::RngResource;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_observer(sound_effects_observer);
@@ -34,15 +35,6 @@ pub enum SoundEffect {
     CurseHeader,
     Curse,
     Start,
-}
-
-#[derive(Resource, Deref, DerefMut)]
-struct RngResource(ChaCha8Rng);
-
-impl Default for RngResource {
-    fn default() -> Self {
-        Self(ChaCha8Rng::from_entropy())
-    }
 }
 
 fn sound_effects_observer(

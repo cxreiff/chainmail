@@ -3,9 +3,8 @@ use std::time::Duration;
 use bevy::{prelude::*, time::common_conditions::on_timer};
 use bevy_ratatui_camera::RatatuiCamera;
 use rand::distributions::uniform::SampleRange;
-use rand_chacha::{ChaCha8Rng, rand_core::SeedableRng};
 
-use crate::{constants::WORD_CUBE_LENGTH, letters::WordBag, states::GameStates};
+use crate::{constants::WORD_CUBE_LENGTH, letters::WordBag, rng::RngResource, states::GameStates};
 
 pub fn plugin(app: &mut App) {
     app.add_systems(OnExit(GameStates::Loading), scene_setup_system)
@@ -34,15 +33,6 @@ impl WordCube {
             color,
             despawn_character,
         }
-    }
-}
-
-#[derive(Resource, Deref, DerefMut)]
-struct RngResource(ChaCha8Rng);
-
-impl Default for RngResource {
-    fn default() -> Self {
-        Self(ChaCha8Rng::from_entropy())
     }
 }
 

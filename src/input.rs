@@ -3,11 +3,7 @@ use crate::states::GameStates;
 #[cfg(feature = "windowed")]
 use bevy::input::ButtonState;
 #[cfg(feature = "windowed")]
-use bevy::input::ButtonState;
-#[cfg(feature = "windowed")]
 use bevy::input::keyboard::KeyboardInput;
-#[cfg(feature = "windowed")]
-use bevy::input::mouse::MouseButtonInput;
 #[cfg(feature = "windowed")]
 use bevy::input::mouse::MouseWheel;
 use bevy::prelude::*;
@@ -18,6 +14,7 @@ use bevy_ratatui::event::MouseEvent as RatatuiMouseEvent;
 
 use crate::interface::draw::Flags;
 use crate::interface::widgets::letter::LetterWidgetState;
+use crate::word_checks::SubmittedWord;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
@@ -46,14 +43,11 @@ fn pass_info_screen_system(
 }
 
 #[cfg(feature = "windowed")]
-fn pass_info_screen_systems(
-    mut commands: Commands,
-    mut mouse_events: EventReader<MouseButtonInput>,
-) {
-    for event in mouse_events.read() {
-        if event.button == MouseButton::Left && event.state == ButtonState::Pressed {
+fn pass_info_screen_system(mut commands: Commands, keyboard_input: Res<ButtonInput<KeyCode>>) {
+    for &press in keyboard_input.get_just_pressed() {
+        if press == KeyCode::Space {
             commands.set_state(GameStates::Printing);
-        }
+        };
     }
 }
 
@@ -66,8 +60,6 @@ fn handle_keyboard_input_system(
 ) {
     use bevy_ratatui::crossterm::event::KeyCode;
     use bevy_ratatui::crossterm::event::KeyEventKind;
-
-    use crate::word_checks::SubmittedWord;
 
     for event in keyboard_input.read() {
         if event.kind == KeyEventKind::Press {
@@ -112,6 +104,7 @@ fn handle_mouse_input_system(
 
 #[cfg(feature = "windowed")]
 fn handle_keyboard_input_system(
+    mut commands: Commands,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut flags: ResMut<Flags>,
     mut current_letter_state: NonSendMut<LetterWidgetState>,
