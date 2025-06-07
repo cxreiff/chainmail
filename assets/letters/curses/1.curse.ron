@@ -1,5 +1,5 @@
 TestimonialStub(
-    message: "lost their keys the very next day",
+    message: "lost {pronoun_possessive} keys the very next day",
     effect: Score(-100),
     targets: [2],
 )

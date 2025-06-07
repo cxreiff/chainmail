@@ -2,7 +2,7 @@ use ratatui::layout::{Constraint, Direction, Layout, Rect, Size};
 use ratatui::style::Style;
 use ratatui::text::{Line, Span};
 
-use crate::constants::{MAC_CYAN_COLOR, MAC_PURPLE_COLOR, PLASTIC_PRIMARY_COLOR};
+use crate::constants::{MAC_CYAN_COLOR, MAC_GREEN_COLOR, PLASTIC_PRIMARY_COLOR};
 
 pub fn _center(area: Rect, max_size: Size) -> Rect {
     let horizontal_layout = Layout::new(
@@ -89,7 +89,7 @@ pub fn interpolate_and_truncate(
 
                 if display_characters + display_characters_count <= max_characters {
                     let color = match keyword {
-                        "recipients" => MAC_PURPLE_COLOR,
+                        "recipients" => MAC_GREEN_COLOR,
                         "time_limit" => MAC_CYAN_COLOR,
                         _ => PLASTIC_PRIMARY_COLOR,
                     };

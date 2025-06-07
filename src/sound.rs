@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_asset_loader::asset_collection::AssetCollection;
 use rand::seq::SliceRandom;
 
-use crate::rng::RngResource;
+use crate::{interface::draw::Flags, rng::RngResource};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_observer(sound_effects_observer);
@@ -60,7 +60,12 @@ fn sound_effects_observer(
     mut commands: Commands,
     handles: Res<SoundEffectAssets>,
     mut rng: Local<RngResource>,
+    flags: Res<Flags>,
 ) {
+    if !flags.sound {
+        return;
+    }
+
     let sound = match trigger.event() {
         SoundEffect::Window => &handles.window,
         SoundEffect::TextGroup => &handles.text_group,

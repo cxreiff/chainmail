@@ -22,7 +22,7 @@ pub const MAC_CYAN_COLOR: Color = Color::from_u32(0x00A0DADE);
 pub const MAC_GREEN_MUTED_COLOR: Color = Color::from_u32(0x00496844);
 pub const _MAC_YELLOW_MUTED_COLOR: Color = Color::from_u32(0x00756A45);
 pub const _MAC_ORANGE_MUTED_COLOR: Color = Color::from_u32(0x00754C3F);
-pub const MAC_RED_MUTED_COLOR: Color = Color::from_u32(0x00643842);
+pub const MAC_RED_MUTED_COLOR: Color = Color::from_u32(0x00543842);
 pub const MAC_PURPLE_MUTED_COLOR: Color = Color::from_u32(0x00594362);
 pub const _MAC_CYAN_MUTED_COLOR: Color = Color::from_u32(0x00385670);
 

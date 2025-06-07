@@ -57,7 +57,6 @@ pub fn layout_frame(
     let name_line = Line::from(name_string).centered();
 
     let mut status_strings = vec![];
-    status_strings.push(format!("sound: {}", if flags.sound { "ON" } else { "OFF" }));
     if flags.debug {
         if let Some(value) = diagnostics
             .get(&EntityCountDiagnosticsPlugin::ENTITY_COUNT)
@@ -78,7 +77,7 @@ pub fn layout_frame(
 
     let stats_widget = StatisticsWidget(stats);
 
-    let controls_string = ["1 to debug", "2 to toggle sound"].join("  |  ");
+    let controls_string = format!(" SOUND {}", if flags.sound { "ON " } else { "OFF" });
     let controls_line = Line::from(controls_string.clone()).centered();
 
     let bottom_area = Layout::new(

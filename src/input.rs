@@ -64,10 +64,10 @@ fn handle_keyboard_input_system(
 
     for event in keyboard_input.read() {
         if event.kind == KeyEventKind::Press {
-            if let KeyCode::Char('1') = event.code {
+            if let KeyCode::Char('=') = event.code {
                 flags.debug = !flags.debug;
             }
-            if let KeyCode::Char('2') = event.code {
+            if let KeyCode::Tab = event.code {
                 flags.sound = !flags.sound;
             }
             if let KeyCode::Up = event.code {
@@ -111,10 +111,7 @@ fn handle_keyboard_input_system(
     mut current_letter_state: NonSendMut<LetterWidgetState>,
 ) {
     for &press in keyboard_input.get_just_pressed() {
-        if press == KeyCode::Digit1 {
-            flags.debug = !flags.debug;
-        };
-        if press == KeyCode::Digit2 {
+        if press == KeyCode::Tab {
             flags.sound = !flags.sound;
         };
         if press == KeyCode::ArrowUp {

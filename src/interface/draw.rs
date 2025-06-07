@@ -12,7 +12,9 @@ use ratatui::{
 use tachyonfx::{Effect, Interpolation, Shader, fx};
 
 use crate::{
-    constants::{MAC_PURPLE_COLOR, MAC_YELLOW_COLOR},
+    constants::{
+        MAC_PURPLE_COLOR, MAC_RED_COLOR, MAC_YELLOW_COLOR, PLASTIC_MEDIUM_BACKGROUND_COLOR,
+    },
     letters::CurrentLetter,
     scene::spawning::WordCube,
     states::{GameStates, Statistics},
@@ -35,10 +37,19 @@ pub fn plugin(app: &mut App) {
         .add_systems(OnExit(GameStates::Printing), deactivate_reset_scene_effect);
 }
 
-#[derive(Resource, Default)]
+#[derive(Resource)]
 pub struct Flags {
     pub debug: bool,
     pub sound: bool,
+}
+
+impl Default for Flags {
+    fn default() -> Self {
+        Self {
+            debug: false,
+            sound: true,
+        }
+    }
 }
 
 fn draw_system(
@@ -70,7 +81,8 @@ fn draw_system(
             let outer_block = Block::default().padding(Padding::proportional(2));
             let info_block = Block::bordered()
                 .border_type(BorderType::Double)
-                .padding(Padding::proportional(2));
+                .padding(Padding::proportional(2))
+                .bg(PLASTIC_MEDIUM_BACKGROUND_COLOR);
 
             let info_paragraph = Paragraph::new(Text::from(vec![
                 Line::from("HOW TO PLAY").bold().fg(MAC_PURPLE_COLOR),
@@ -90,6 +102,8 @@ fn draw_system(
                 ),
                 Line::from(""),
                 Line::from("Someday the money will do something. Today is not that day."),
+                Line::from(""),
+                Line::from("Press TAB to toggle sound.").fg(MAC_RED_COLOR),
                 Line::from(""),
                 Line::from("PRESS SPACE TO BEGIN")
                     .bold()

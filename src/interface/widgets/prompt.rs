@@ -11,9 +11,8 @@ use ratatui::{
 
 use crate::{
     constants::{
-        CURSOR_BLINK_SPEED, CUSTOM_BORDERS_UNDER, MAC_CYAN_COLOR, MAC_RED_MUTED_COLOR,
-        PLASTIC_EMPHASIS_COLOR, PLASTIC_MEDIUM_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR,
-        PLASTIC_SECONDARY_COLOR,
+        CURSOR_BLINK_SPEED, CUSTOM_BORDERS_UNDER, MAC_RED_MUTED_COLOR, PLASTIC_EMPHASIS_COLOR,
+        PLASTIC_MEDIUM_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR, PLASTIC_SECONDARY_COLOR,
     },
     letters::CurrentLetter,
     states::{GameStates, LetterFailed, generate_current_letter_system},
@@ -82,8 +81,7 @@ impl StatefulWidget for &Prompt {
             Span::from(cursor).fg(PLASTIC_SECONDARY_COLOR),
         ]);
 
-        let timer_text =
-            Line::from(format!(" {:.1}s ", self.timer.remaining_secs())).fg(MAC_CYAN_COLOR);
+        let timer_text = Line::from(format!(" {:.1}s ", self.timer.remaining_secs())).bold();
 
         Block::default()
             .bg(MAC_RED_MUTED_COLOR)
