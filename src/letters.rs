@@ -7,7 +7,7 @@ use rand_chacha::ChaCha8Rng;
 use serde::Deserialize;
 
 use crate::{
-    constants::{RECIPIENTS_RANGE, TIME_LIMIT_RANGE},
+    constants::{EXTRA_RECIPIENTS_RANGE, TIME_LIMIT_RANGE},
     scene::spawning::WordCube,
     states::GameStates,
 };
@@ -153,9 +153,10 @@ impl LetterBag {
             .expect("flavor asset must be present")
             .to_owned();
 
-        let recipients = RECIPIENTS_RANGE
-            .choose(rng)
-            .expect("RECIPIENTS_RANGE must be a valid range");
+        let recipients = blessing_amount
+            + EXTRA_RECIPIENTS_RANGE
+                .choose(rng)
+                .expect("RECIPIENTS_RANGE must be a valid range");
 
         let time_limit = TIME_LIMIT_RANGE
             .choose(rng)
@@ -298,7 +299,7 @@ struct RngResource(ChaCha8Rng);
 
 impl Default for RngResource {
     fn default() -> Self {
-        Self(ChaCha8Rng::seed_from_u64(19878367867912))
+        Self(ChaCha8Rng::from_entropy())
     }
 }
 

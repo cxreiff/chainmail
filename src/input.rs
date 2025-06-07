@@ -1,8 +1,13 @@
 use crate::interface::widgets::prompt::Prompt;
+use crate::states::GameStates;
+#[cfg(feature = "windowed")]
+use bevy::input::ButtonState;
 #[cfg(feature = "windowed")]
 use bevy::input::ButtonState;
 #[cfg(feature = "windowed")]
 use bevy::input::keyboard::KeyboardInput;
+#[cfg(feature = "windowed")]
+use bevy::input::mouse::MouseButtonInput;
 #[cfg(feature = "windowed")]
 use bevy::input::mouse::MouseWheel;
 use bevy::prelude::*;
@@ -21,8 +26,35 @@ pub(super) fn plugin(app: &mut App) {
             handle_keyboard_input_system,
             handle_mouse_input_system,
             handle_prompt_input_system,
+            pass_info_screen_system.run_if(in_state(GameStates::Info)),
         ),
     );
+}
+
+#[cfg(not(feature = "windowed"))]
+fn pass_info_screen_system(
+    mut commands: Commands,
+    mut keyboard_input: EventReader<RatatuiKeyEvent>,
+) {
+    use bevy_ratatui::crossterm::event::KeyCode;
+
+    for event in keyboard_input.read() {
+        if event.code == KeyCode::Char(' ') {
+            commands.set_state(GameStates::Printing);
+        }
+    }
+}
+
+#[cfg(feature = "windowed")]
+fn pass_info_screen_systems(
+    mut commands: Commands,
+    mut mouse_events: EventReader<MouseButtonInput>,
+) {
+    for event in mouse_events.read() {
+        if event.button == MouseButton::Left && event.state == ButtonState::Pressed {
+            commands.set_state(GameStates::Printing);
+        }
+    }
 }
 
 #[cfg(not(feature = "windowed"))]
@@ -96,6 +128,9 @@ fn handle_keyboard_input_system(
         }
         if press == KeyCode::ArrowDown {
             current_letter_state.scroll_state.scroll_down();
+        }
+        if press == KeyCode::Enter {
+            commands.trigger(SubmittedWord);
         }
     }
 }

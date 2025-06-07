@@ -6,13 +6,16 @@ use bevy_ratatui_camera::RatatuiCameraWidget;
 use ratatui::{
     layout::{Constraint, Layout, Rect},
     style::Stylize,
-    text::{Line, Span},
-    widgets::{Block, Padding, StatefulWidget, Widget},
+    text::{Line, Span, Text},
+    widgets::{Block, BorderType, Padding, Paragraph, StatefulWidget, Widget, Wrap},
 };
 use tachyonfx::{Effect, Interpolation, Shader, fx};
 
 use crate::{
-    constants::MAC_YELLOW_COLOR, letters::CurrentLetter, scene::spawning::WordCube,
+    constants::{MAC_PURPLE_COLOR, MAC_YELLOW_COLOR},
+    letters::CurrentLetter,
+    scene::spawning::WordCube,
+    score::Statistics,
     states::GameStates,
 };
 
@@ -42,6 +45,7 @@ pub struct Flags {
 fn draw_system(
     mut ratatui: ResMut<RatatuiContext>,
     flags: Res<Flags>,
+    state: Res<State<GameStates>>,
     diagnostics: Res<DiagnosticsStore>,
     current_letter: Option<Res<CurrentLetter>>,
     mut current_letter_state: NonSendMut<LetterWidgetState>,
@@ -51,6 +55,7 @@ fn draw_system(
     mut prompt_state: ResMut<PromptState>,
     confettis: Query<&Confetti>,
     reset_effect: NonSendMut<ResetEffect>,
+    stats: Res<Statistics>,
     time: Res<Time>,
 ) -> Result {
     let (camera, camera_transform, camera_widget) = camera.into_inner();
@@ -58,9 +63,48 @@ fn draw_system(
 
     ratatui.draw(|frame| {
         let show_log_panel = !cfg!(feature = "windowed");
-        let area = layout_frame(frame, &flags, &diagnostics, show_log_panel);
+        let area = layout_frame(frame, &flags, &diagnostics, &stats, show_log_panel);
 
         let buf = frame.buffer_mut();
+
+        if *state == GameStates::Info {
+            let outer_block = Block::default().padding(Padding::proportional(2));
+            let info_block = Block::bordered()
+                .border_type(BorderType::Double)
+                .padding(Padding::proportional(2));
+
+            let info_paragraph = Paragraph::new(Text::from(vec![
+                Line::from("HOW TO PLAY").bold().fg(MAC_PURPLE_COLOR),
+                Line::from(""),
+                Line::from(
+                    "Each round, a chain letter will appear on the left. Each letter has a list of \
+                    blessings, for if the letter is forwarded, and a list of curses, for if the \
+                    chain is broken. Each blessing and curse has a missing word. Your job is to \
+                    look at the pool of words moving past on the right side of the screen, and \
+                    figure out which ones correspond with the blessings.",
+                ),
+                Line::from(""),
+                Line::from(
+                    "Type your word and press enter. Matching blessings bestow money or score, \
+                    curses take it away, and decoys do nothing (currently). Collect all the \
+                    blessings to collect your income and move to the next round.",
+                ),
+                Line::from(""),
+                Line::from("Someday the money will do something. Today is not that day."),
+                Line::from(""),
+                Line::from("PRESS SPACE TO BEGIN")
+                    .bold()
+                    .fg(MAC_PURPLE_COLOR),
+            ]))
+            .wrap(Wrap { trim: true });
+
+            let inner_area = outer_block.inner(area);
+            let inner_inner_area = info_block.inner(inner_area);
+            info_block.render(inner_area, buf);
+            info_paragraph.render(inner_inner_area, buf);
+
+            return;
+        }
 
         let left_width = (area.width * 2 / 5).min(120);
         let [left_area, right_area] =
@@ -121,7 +165,7 @@ fn draw_system(
             star_widgets.push((
                 star_line.bg(darker_color),
                 Rect::new(
-                    position.x as u16,
+                    position.x as u16 - (star.word.len() as u16 / 2) + 1,
                     position.y as u16,
                     star.word.len() as u16,
                     1,

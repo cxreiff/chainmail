@@ -12,17 +12,21 @@ use ratatui::{
 };
 use tui_logger::TuiLoggerWidget;
 
-use crate::constants::{
-    MAC_PURPLE_MUTED_COLOR, MAC_RED_MUTED_COLOR, PLASTIC_DARK_BACKGROUND_COLOR,
-    PLASTIC_LIGHT_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR,
+use crate::{
+    constants::{
+        MAC_PURPLE_MUTED_COLOR, MAC_RED_MUTED_COLOR, PLASTIC_DARK_BACKGROUND_COLOR,
+        PLASTIC_LIGHT_BACKGROUND_COLOR, PLASTIC_PRIMARY_COLOR,
+    },
+    score::Statistics,
 };
 
-use super::draw::Flags;
+use super::{draw::Flags, widgets::statistics::StatisticsWidget};
 
 pub fn layout_frame(
     frame: &mut Frame,
     flags: &Flags,
     diagnostics: &DiagnosticsStore,
+    stats: &Statistics,
     show_log_panel: bool,
 ) -> ratatui::layout::Rect {
     Block::default()
@@ -71,6 +75,8 @@ pub fn layout_frame(
     let status_string = status_strings.join("  |  ");
     let status_line = Line::from(status_string).centered();
 
+    let stats_widget = StatisticsWidget(stats);
+
     let controls_string = ["1 to debug", "2 to toggle sound"].join("  |  ");
     let controls_line = Line::from(controls_string.clone()).centered();
 
@@ -93,7 +99,13 @@ pub fn layout_frame(
     );
     frame.render_widget(name_line, undertab_block.inner(bottom_area[0]));
     frame.render_widget(undertab_block.clone(), bottom_area[1]);
-    frame.render_widget(status_line, undertab_block.inner(bottom_area[1]));
+
+    if flags.debug {
+        frame.render_widget(status_line, undertab_block.inner(bottom_area[1]));
+    } else {
+        frame.render_widget(stats_widget, undertab_block.inner(bottom_area[1]));
+    }
+
     frame.render_widget(
         undertab_block
             .clone()

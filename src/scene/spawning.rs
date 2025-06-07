@@ -42,7 +42,7 @@ struct RngResource(ChaCha8Rng);
 
 impl Default for RngResource {
     fn default() -> Self {
-        Self(ChaCha8Rng::seed_from_u64(19878367467712))
+        Self(ChaCha8Rng::from_entropy())
     }
 }
 

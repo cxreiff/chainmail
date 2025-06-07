@@ -11,6 +11,7 @@ use crate::{
     interface::widgets::{letter::LetterWidgetState, prompt::Prompt},
     letters::{CurrentLetter, Flavor, LetterAssets, LetterBag, Name, TestimonialStub, WordBag},
     scene::spawning::WordCube,
+    word_checks::WordGuesses,
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -33,6 +34,7 @@ pub(super) fn plugin(app: &mut App) {
 pub enum GameStates {
     #[default]
     Loading,
+    Info,
     Printing,
     Playing,
     Resetting,
@@ -49,7 +51,7 @@ pub struct Rng(ChaCha8Rng);
 
 impl Default for Rng {
     fn default() -> Self {
-        Self(ChaCha8Rng::seed_from_u64(19874567867912))
+        Self(ChaCha8Rng::from_entropy())
     }
 }
 
@@ -100,6 +102,7 @@ pub fn generate_current_letter_system(
         curse_amount,
     );
 
+    commands.insert_resource(WordGuesses(letter.recipients));
     commands.insert_resource(WordBag::new(
         &letter.blessings,
         &letter.curses,

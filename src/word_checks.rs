@@ -3,17 +3,25 @@ use bevy::prelude::*;
 use crate::{
     constants::{MAC_GREEN_COLOR, MAC_PURPLE_COLOR, MAC_RED_COLOR, MAC_YELLOW_COLOR},
     interface::widgets::{confetti::ConfettiSpawn, prompt::Prompt},
-    letters::CurrentLetter,
+    letters::{CurrentLetter, Effect, WordBag},
     scene::spawning::WordCube,
-    states::LetterCleared,
+    score::Statistics,
+    states::{LetterCleared, LetterFailed},
 };
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_observer(submitted_word_observer);
+    app.add_observer(submitted_word_observer)
+        .add_observer(activate_effect_observer);
 }
 
 #[derive(Event)]
 pub struct SubmittedWord;
+
+#[derive(Event)]
+pub struct ActivateEffect(Effect);
+
+#[derive(Resource, Deref, DerefMut)]
+pub struct WordGuesses(pub usize);
 
 fn submitted_word_observer(
     _trigger: Trigger<SubmittedWord>,
@@ -21,10 +29,19 @@ fn submitted_word_observer(
     mut prompt: ResMut<Prompt>,
     mut current_letter: ResMut<CurrentLetter>,
     word_cubes: Query<(Entity, &WordCube, &Transform)>,
+    mut word_bag: ResMut<WordBag>,
+    mut word_guesses: ResMut<WordGuesses>,
 ) {
     for (entity, word_cube, transform) in &word_cubes {
         if word_cube.word == prompt.text {
-            // TODO: activate effect, check for completions.
+            if let Some(index) = word_bag
+                .full_collection
+                .iter()
+                .position(|word_cube| word_cube.word == prompt.text)
+            {
+                word_bag.full_collection.remove(index);
+            };
+
             commands.entity(entity).despawn();
             commands.trigger(ConfettiSpawn {
                 position: transform.translation,
@@ -35,12 +52,14 @@ fn submitted_word_observer(
             for blessing in &mut current_letter.blessings {
                 if blessing.target_word == prompt.text {
                     blessing.collected = true;
+                    commands.trigger(ActivateEffect(blessing.effect.clone()));
                 }
             }
 
             for curse in &mut current_letter.curses {
                 if curse.target_word == prompt.text {
                     curse.collected = true;
+                    commands.trigger(ActivateEffect(curse.effect.clone()));
                 }
             }
         }
@@ -48,12 +67,18 @@ fn submitted_word_observer(
 
     prompt.text = "".into();
 
+    **word_guesses -= 1;
+
     if current_letter
         .blessings
         .iter()
         .all(|blessing| blessing.collected)
     {
         commands.trigger(LetterCleared);
+    }
+
+    if **word_guesses == 0 {
+        commands.trigger(LetterFailed);
     }
 }
 
@@ -63,5 +88,18 @@ fn color_for_character(character: &char) -> ratatui::style::Color {
         'x' => MAC_RED_COLOR,
         '~' => MAC_YELLOW_COLOR,
         _ => MAC_PURPLE_COLOR,
+    }
+}
+
+fn activate_effect_observer(trigger: Trigger<ActivateEffect>, mut stats: ResMut<Statistics>) {
+    match trigger.event().0 {
+        Effect::Score(score) => {
+            stats.score += score;
+        }
+        Effect::Money(money) => {
+            stats.money += money;
+        }
+        Effect::Income(income) => stats.income += income,
+        Effect::Noop => {}
     }
 }

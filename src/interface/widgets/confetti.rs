@@ -17,6 +17,7 @@ pub(super) fn plugin(app: &mut App) {
         Update,
         (
             move_confetti_system.run_if(in_state(GameStates::Playing)),
+            move_confetti_system.run_if(in_state(GameStates::Resetting)),
             despawn_confetti_system,
         ),
     );
@@ -68,7 +69,7 @@ struct RngResource(ChaCha8Rng);
 
 impl Default for RngResource {
     fn default() -> Self {
-        Self(ChaCha8Rng::seed_from_u64(19878967869992))
+        Self(ChaCha8Rng::from_entropy())
     }
 }
 

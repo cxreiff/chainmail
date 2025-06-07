@@ -77,7 +77,7 @@ impl StatefulWidget for &Prompt {
         let cursor = if state.cursor_visible { "_" } else { "" };
 
         let text = Line::from(vec![
-            Span::from(" ❯ ").fg(PLASTIC_SECONDARY_COLOR),
+            Span::from(" > ").fg(PLASTIC_SECONDARY_COLOR).bold(),
             Span::from(self.text.clone()).fg(PLASTIC_EMPHASIS_COLOR),
             Span::from(cursor).fg(PLASTIC_SECONDARY_COLOR),
         ]);
