@@ -58,25 +58,26 @@ fn handle_keyboard_input_system(
     mut keyboard_input: EventReader<RatatuiKeyEvent>,
     mut flags: ResMut<Flags>,
     mut current_letter_state: NonSendMut<LetterWidgetState>,
+    game_state: Res<State<GameStates>>,
 ) {
     use bevy_ratatui::crossterm::event::KeyCode;
     use bevy_ratatui::crossterm::event::KeyEventKind;
 
     for event in keyboard_input.read() {
         if event.kind == KeyEventKind::Press {
-            if let KeyCode::Char('=') = event.code {
+            if event.code == KeyCode::Char('=') {
                 flags.debug = !flags.debug;
             }
-            if let KeyCode::Tab = event.code {
+            if event.code == KeyCode::Tab {
                 flags.sound = !flags.sound;
             }
-            if let KeyCode::Up = event.code {
+            if event.code == KeyCode::Up {
                 current_letter_state.scroll_state.scroll_up();
             }
-            if let KeyCode::Down = event.code {
+            if event.code == KeyCode::Down {
                 current_letter_state.scroll_state.scroll_down();
             }
-            if let KeyCode::Enter = event.code {
+            if event.code == KeyCode::Enter && *game_state == GameStates::Playing {
                 commands.trigger(SubmittedWord);
             }
         }
@@ -109,6 +110,7 @@ fn handle_keyboard_input_system(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut flags: ResMut<Flags>,
     mut current_letter_state: NonSendMut<LetterWidgetState>,
+    game_state: Res<State<GameStates>>,
 ) {
     for &press in keyboard_input.get_just_pressed() {
         if press == KeyCode::Tab {
@@ -120,7 +122,7 @@ fn handle_keyboard_input_system(
         if press == KeyCode::ArrowDown {
             current_letter_state.scroll_state.scroll_down();
         }
-        if press == KeyCode::Enter {
+        if press == KeyCode::Enter && *game_state == GameStates::Playing {
             commands.trigger(SubmittedWord);
         }
     }

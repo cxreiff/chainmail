@@ -50,7 +50,7 @@ fn word_cube_spawn_system(
     camera: Single<(&Camera, &GlobalTransform), With<RatatuiCamera>>,
 ) {
     let (camera, camera_transform) = camera.into_inner();
-    let Some(spawn_position) = get_spawn_position(camera, camera_transform, 2.0, 5.0, &mut rng)
+    let Some(spawn_position) = get_spawn_position(camera, camera_transform, 2.0, 4.0, &mut rng)
     else {
         return;
     };
@@ -87,7 +87,7 @@ fn word_cube_despawn_system(
     camera: Single<(&Camera, &GlobalTransform), With<RatatuiCamera>>,
 ) {
     let (camera, camera_transform) = camera.into_inner();
-    let Some(lowest_visible_y) = get_lowest_visible_y(camera, camera_transform, 5.0) else {
+    let Some(lowest_visible_y) = get_lowest_visible_y(camera, camera_transform, 4.0) else {
         return;
     };
 
@@ -108,11 +108,11 @@ fn get_spawn_position(
     let viewport_size = camera.logical_viewport_size()?;
 
     let top_left = camera
-        .viewport_to_world(camera_transform, Vec2::new(0.0, 0.0))
+        .viewport_to_world(camera_transform, Vec2::new(0.05, 0.0))
         .ok()?;
 
     let top_right = camera
-        .viewport_to_world(camera_transform, Vec2::new(viewport_size.x, 0.0))
+        .viewport_to_world(camera_transform, Vec2::new(viewport_size.x - 0.05, 0.0))
         .ok()?;
 
     let z = (near_depth..far_depth).sample_single(&mut rng.0);

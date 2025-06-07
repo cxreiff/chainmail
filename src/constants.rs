@@ -30,19 +30,16 @@ pub const _MAC_CYAN_MUTED_COLOR: Color = Color::from_u32(0x00385670);
 pub const LETTER_PADDING: u16 = 1;
 
 // Length of every side of each word cube.
-pub const WORD_CUBE_LENGTH: f32 = 0.5;
-
-// Range of possible recipient quotas per letter.
-pub const _EXTRA_RECIPIENTS_RANGE: RangeInclusive<usize> = 2..=4;
+pub const WORD_CUBE_LENGTH: f32 = 0.7;
 
 // Range of possible time limits (in seconds) per letter.
-pub const TIME_LIMIT_RANGE: RangeInclusive<usize> = 30..=40;
+pub const TIME_LIMIT_RANGE: RangeInclusive<usize> = 40..=60;
 
 // Range of possible blessing quantities per letter.
-pub const BLESSING_RANGE: RangeInclusive<usize> = 2..=5;
+pub const BLESSING_RANGE: RangeInclusive<usize> = 3..=5;
 
 // Range of possible curse quantities per letter.
-pub const CURSE_RANGE: RangeInclusive<usize> = 2..=5;
+pub const CURSE_RANGE: RangeInclusive<usize> = 3..=5;
 
 // Range of possible decoy quantites per letter.
 pub const DECOY_RANGE: RangeInclusive<usize> = 2..=3;
