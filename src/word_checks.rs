@@ -33,17 +33,17 @@ fn submitted_word_observer(
     for (entity, word_cube, transform) in &word_cubes {
         let mut decoy = false;
 
+        if let Some(index) = word_bag
+            .full_collection
+            .iter()
+            .position(|word_cube| word_cube.word == prompt.text)
+        {
+            word_bag.full_collection.remove(index);
+        };
+        word_bag.reset(&mut rng.0);
+
         if word_cube.word == prompt.text {
             decoy = true;
-
-            if let Some(index) = word_bag
-                .full_collection
-                .iter()
-                .position(|word_cube| word_cube.word == prompt.text)
-            {
-                word_bag.full_collection.remove(index);
-            };
-            word_bag.reset(&mut rng.0);
 
             commands.entity(entity).despawn();
             commands.trigger(ConfettiSpawn {
