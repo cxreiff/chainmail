@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "dinosaur",
+    effect: Noop,
+    targets: [0],
+)

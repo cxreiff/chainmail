@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "penguin",
+    effect: Noop,
+    targets: [0],
+)

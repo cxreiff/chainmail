@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "got stuck in terrible traffic for hours the following day",
+    effect: Score(-120),
+    targets: [4],
+)

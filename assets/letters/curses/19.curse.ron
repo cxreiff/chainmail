@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "had {pronoun_possessive} basement flood while they were out of town",
+    effect: Money(-400),
+    targets: [2],
+)

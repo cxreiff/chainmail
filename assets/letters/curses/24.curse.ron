@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "locked {pronoun_possessive} partner out of {pronoun_possessive} apartment for four hours",
+    effect: Score(-160),
+    targets: [2],
+)

@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "broke {pronoun_possessive} ankle trying to climb a tree",
+    effect: Score(-180),
+    targets: [5],
+)

@@ -1,8 +1,8 @@
 [package]
-name = "chainmail"
-description = "If You Do Not Send This Letter To Ten Recipients You Will Be Visited By The Wraith"
+name = "chainmailer"
+description = "If You Do Not Send This Letter To Ten Recipients You Will Regret It"
 authors = ["cxreiff <cooper@cxreiff.com>"]
-version = "0.1.6"
+version = "0.1.7"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/cxreiff/chainmail"

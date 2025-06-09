@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "helicopter",
+    effect: Noop,
+    targets: [0],
+)

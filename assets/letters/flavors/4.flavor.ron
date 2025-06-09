@@ -1,0 +1,6 @@
+Flavor(
+    title: "THE CHAIN OF PROSPERITY",
+    body: "Congratulations! You've been granted an invitation to the Chain of Prosperity! You must extend this exclusive letter to {recipients} deserving individuals within {time_limit} seconds to receive its bounty.",
+    signoff: "Let us find success together! Forward to {recipients} ambitious people ASAP. Extending the chain will bring you opportunities beyond measure!",
+    footer: "The Chain of Prosperity was devised in 1981 and has been the ignition point of many successful ventures.",
+)

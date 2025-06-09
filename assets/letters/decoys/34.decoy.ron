@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "glacier",
+    effect: Noop,
+    targets: [0],
+)

@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "had {pronoun_possessive} wallet stolen at the farmer's market",
+    effect: Income(-2),
+    targets: [7],
+)

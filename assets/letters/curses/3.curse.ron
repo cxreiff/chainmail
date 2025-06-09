@@ -1,5 +1,5 @@
 TestimonialStub(
     message: "missed an important phone call",
-    effect: Income(-1),
+    effect: Income(-5),
     targets: [3],
 )

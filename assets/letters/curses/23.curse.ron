@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "discovered mold behind {pronoun_possessive} bathroom walls",
+    effect: Money(-250),
+    targets: [1],
+)

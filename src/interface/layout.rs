@@ -53,7 +53,7 @@ pub fn layout_frame(
         unreachable!()
     };
 
-    let name_string = "CHAINMAIL";
+    let name_string = "CHAINMAILER";
     let name_line = Line::from(name_string).centered();
 
     let mut status_strings = vec![];

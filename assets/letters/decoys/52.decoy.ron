@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "sandwich",
+    effect: Noop,
+    targets: [0],
+)

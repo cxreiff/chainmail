@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "sold {pronoun_possessive} patent to a major company",
+    effect: Money(750),
+    targets: [2],
+)

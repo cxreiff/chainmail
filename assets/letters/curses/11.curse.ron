@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "dropped {pronoun_possessive} phone into the ocean",
+    effect: Score(-175),
+    targets: [5],
+)

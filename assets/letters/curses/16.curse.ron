@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "had {pronoun_possessive} checked luggage sent to the wrong city",
+    effect: Score(-200),
+    targets: [3],
+)

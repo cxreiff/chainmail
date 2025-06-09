@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "football",
+    effect: Noop,
+    targets: [0],
+)

@@ -1,0 +1,6 @@
+Flavor(
+    title: "THE MIRACLE MESSENGER",
+    body: "Are you in need of a miracle? This letter has not reached you by accident, and if you put your faith in it, and forward it to {recipients} pious recipients within {time_limit} seconds, its divinity will invite a miracle into your life!",
+    signoff: "Faith begets faith! Share this divine message with {recipients} faithful friends, and watch wonders be wrought beyond your wildest imagination!",
+    footer: "Those who let the Miracle Messenger end with them may regret their indolence when judgement comes...",
+)

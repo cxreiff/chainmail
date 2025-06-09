@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "discovered {pronoun_possessive} distant relative left {pronoun_object} an unexpected inheritance",
+    effect: Money(500),
+    targets: [3],
+)

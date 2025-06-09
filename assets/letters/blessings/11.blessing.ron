@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "discovered that some antiques in {pronoun_possessive} attic were worth a fortune",
+    effect: Money(300),
+    targets: [3],
+)

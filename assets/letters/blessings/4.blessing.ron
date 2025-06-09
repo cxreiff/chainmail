@@ -1,5 +1,5 @@
 TestimonialStub(
-    message: "won a contest {pronoun_subject} had forgotten entering",
+    message: "won a contest {pronoun_subject} forgot {pronoun_subject} entered",
     effect: Money(200),
-    targets: [5],
+    targets: [4],
 )

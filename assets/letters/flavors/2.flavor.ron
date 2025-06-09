@@ -1,0 +1,6 @@
+Flavor(
+    title: "THE CHAIN OF COMPANIONSHIP",
+    body: "You have been invited into a sacred circle of friendship! Connection and joy awaits those who continue the chain. Keep the circle unbroken by sharing this invitation with {recipients} of your closest friends within {time_limit} seconds.",
+    signoff: "Friendship is better with friends! Share this letter with {recipients} special people to bring them into the circle. Those who grow the circle will find their bonds grow ever stronger!",
+    footer: "The Chain of Companionship was formed in 1967 and will someday encompass every human being.",
+)

@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "found {pronoun_possessive} lost wallet safe at home",
+    effect: Money(50),
+    targets: [3],
+)

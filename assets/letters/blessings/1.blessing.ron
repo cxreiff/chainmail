@@ -1,5 +1,5 @@
 TestimonialStub(
-    message: "received unexpected money 4 days later",
-    effect: Money(20),
-    targets: [1],
+    message: "received an unexpected sum of money a handful of days later",
+    effect: Money(40),
+    targets: [7],
 )

@@ -1,5 +1,5 @@
 TestimonialStub(
-    message: "met {pronoun_possessive} true love 9 days after sending",
+    message: "met {pronoun_possessive} true love a week after forwarding",
     effect: Score(100),
-    targets: [2],
+    targets: [3],
 )

@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "received a promotion {pronoun_subject} they thought would go to a coworker",
+    effect: Income(15),
+    targets: [2],
+)

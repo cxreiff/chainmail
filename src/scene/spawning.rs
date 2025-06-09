@@ -11,7 +11,7 @@ pub fn plugin(app: &mut App) {
         .add_systems(
             Update,
             (
-                word_cube_spawn_system.run_if(on_timer(Duration::from_millis(1200))),
+                word_cube_spawn_system.run_if(on_timer(Duration::from_millis(1000))),
                 word_cube_move_system,
                 word_cube_despawn_system,
             )
@@ -75,7 +75,7 @@ fn word_cube_spawn_system(
 
 fn word_cube_move_system(time: Res<Time>, mut stars: Query<&mut Transform, With<WordCube>>) {
     for mut star in &mut stars {
-        star.translation.y -= time.delta_secs() * 0.35;
+        star.translation.y -= time.delta_secs() * 0.45;
         star.rotate_y(time.delta_secs());
         star.rotate_x(time.delta_secs() * 0.4);
     }

@@ -1,0 +1,6 @@
+Flavor(
+    title: "THE WISDOM CHAIN",
+    body: "Ancient wisdom contained in this letter is ready to flow through to you. By sharing this letter with {recipients} luminaries within {time_limit} seconds, you join an unbroken chain of secret knowledge that will bestow great insight upon you.",
+    signoff: "Do not let this wisdom end with you! Pass it on to {recipients} fellow knowledge seekers. Honoring the chain will water the seed of understanding growing within.",
+    footer: "The Wisdom Chain was put to paper ages past and may someday spread wisdom to other planets.",
+)

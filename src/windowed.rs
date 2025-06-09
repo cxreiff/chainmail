@@ -13,7 +13,7 @@ pub(super) fn plugin(app: &mut App) {
             .set(ImagePlugin::default_nearest())
             .set(WindowPlugin {
                 primary_window: Window {
-                    title: "Chainmail".to_string(),
+                    title: "CHAINMAILER".to_string(),
                     fit_canvas_to_parent: true,
                     ..default()
                 }

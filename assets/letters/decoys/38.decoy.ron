@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "prism",
+    effect: Noop,
+    targets: [0],
+)

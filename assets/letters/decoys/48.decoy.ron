@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "lighthouse",
+    effect: Noop,
+    targets: [0],
+)

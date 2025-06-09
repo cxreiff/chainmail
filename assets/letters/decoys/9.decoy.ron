@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "umbrella",
+    effect: Noop,
+    targets: [0],
+)

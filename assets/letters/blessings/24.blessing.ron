@@ -1,0 +1,5 @@
+TestimonialStub(
+    message: "won a raffle at a community event",
+    effect: Score(100),
+    targets: [5],
+)
